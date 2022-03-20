@@ -1,6 +1,7 @@
 import math
-import OctoNode
+
 from Config import HIT_LOGODDS
+from octomap.OctoNode import OctoNode
 
 
 class OctoTree:
@@ -27,7 +28,7 @@ class OctoTree:
         self._max_depth = max_depth
 
         self._root = OctoNode()
-    
+
     @property
     def radius(self):
         """
@@ -80,8 +81,6 @@ class OctoTree:
         """
         if not len(point) == 3:
             raise ValueError("Point shoule be tuple (x,y,z)")  
-
-        
 
     def contains(self, point: tuple):
         """

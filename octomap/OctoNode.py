@@ -101,8 +101,6 @@ class OctoNode:
             self._children[child_index].update(point, diff_logodds, self.origin(child_index, origin, width), 
                                                width / 2, max_depth - 1)
 
-
-
     def _update_logodds(self, diff_logodds):
         """
         Updates the occupancy probability in logodds of the leaf node.
@@ -122,7 +120,7 @@ class OctoNode:
         Returns:
             occupancy probability of a given point.
         """
-        if self.is_leaf():
+        if not self.has_children():
             return self.probability
         else:
             child_index = self.index(point, origin, width)

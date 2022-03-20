@@ -9,6 +9,7 @@ from Config import TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH
 
 URI = 'radio://0/80/2M'
 
+
 def get_lidar_point():
     cflib.crtp.init_drivers(enable_debug_driver=False)
 
@@ -23,7 +24,7 @@ def get_lidar_point():
                     "right": multi_ranger.right,
                     "up": multi_ranger.up
                 }
-
+                print(item)
                 time.sleep(1)
 
 
