@@ -1,11 +1,7 @@
 import math
-import configparser
 import OctoNode
+from Config import HIT_LOGODDS
 
-config_file = 'config.ini'
-con = configparser.ConfigParser()
-con.read(config_file, encoding='utf-8')
-configs = con.sections()
 
 class OctoTree:
     """
@@ -62,7 +58,7 @@ class OctoTree:
         
         return origin
     
-    def insert_point(self, point: tuple, probability: float=dict(configs.items('step').dict)['hit_logodds']):
+    def insert_point(self, point: tuple, probability: float=HIT_LOGODDS):
         """
         Add an observation to the octo map.
 
