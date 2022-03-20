@@ -79,7 +79,9 @@ class OctoTree:
             point: the coordinate of the ovservation lidar point --- (x,y,z): tuple
         """
         if not len(point) == 3:
-            raise ValueError("Point shoule be tuple (x,y,z)")    
+            raise ValueError("Point shoule be tuple (x,y,z)")  
+
+        
 
     def contains(self, point: tuple):
         """
