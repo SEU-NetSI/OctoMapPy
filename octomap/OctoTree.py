@@ -71,7 +71,7 @@ class OctoTree:
 
         self._root.update(point, diff_logodds, self.origin, self.width, self._max_depth)
 
-    def ray_casting(self, point: tuple, diff_logodds: float):
+    def ray_casting(self, point: tuple):
         """
         Add an observation to the treemap.
 
@@ -79,7 +79,9 @@ class OctoTree:
             point: the coordinate of the ovservation lidar point --- (x,y,z): tuple
         """
         if not len(point) == 3:
-            raise ValueError("Point shoule be tuple (x,y,z)")    
+            raise ValueError("Point shoule be tuple (x,y,z)")  
+
+        
 
     def contains(self, point: tuple):
         """
