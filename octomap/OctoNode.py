@@ -33,14 +33,8 @@ class OctoNode:
         Splits the node into 8 child nodes.
         Child nodes are given the occupancy probability of this parent node as the initial probability
         """
-        if not self.is_leaf():
-            return
-        
-        self._children = (
-            OctoNode(self.probability), OctoNode(self.probability), OctoNode(self.probability),
-            OctoNode(self.probability), OctoNode(self.probability), OctoNode(self.probability),
-            OctoNode(self.probability), OctoNode(self.probability),
-        )
+        temp: list = [OctoNode()] * 8
+        self._children = tuple(temp)
 
     def index(self, point, origin, width):
         """
@@ -61,16 +55,18 @@ class OctoNode:
                (2 if point[1] >= origin[1] + width / 2 else 0) + \
                (4 if point[2] >= origin[2] + width / 2 else 0)
 
-    def contains(self, point, origin, width):
+    @staticmethod
+    def contains(point, origin, width):
         """
         Returns:
             whether the point is contained by this node --- bool
         """
-        return origin[0] <= point[0] < origin[0] + width and \
-               origin[1] <= point[1] < origin[1] + width and \
-               origin[2] <= point[2] < origin[2] + width
+        return (origin[0] <= point[0] < (origin[0] + width)) and \
+               (origin[1] <= point[1] < (origin[1] + width)) and \
+               (origin[2] <= point[2] < (origin[2] + width))
 
-    def origin(self, index: int, origin: tuple, width: int):
+    @staticmethod
+    def origin(index: int, origin: tuple, width: int):
         """
         Calculates the origin of the node with given index.
 
@@ -79,7 +75,7 @@ class OctoNode:
             origin: the origin coordinate of the parent node --- (x,y,z): tuple
             width: the width of the parent node --- int
         """
-        hwidth: int = width / 2
+        hwidth: int = int(width / 2)
 
         return (origin[0] + (hwidth if index & 1 else 0),
                 origin[1] + (hwidth if index & 2 else 0),

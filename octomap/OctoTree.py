@@ -34,7 +34,7 @@ class OctoTree:
         Returns:
             the radius of this tree (also width/2) --- int
         """
-        radius: int = self._resolution * math.pow(2, self._max_depth - 1)
+        radius: int = self._resolution * int(math.pow(2, self._max_depth - 1))
 
         return radius
     
@@ -44,7 +44,7 @@ class OctoTree:
         Returns:
             the width of this tree --- int
         """
-        width: int = self._resolution * math.pow(2, self._max_depth)
+        width: int = int(self._resolution * math.pow(2, self._max_depth))
 
         return width
     
@@ -58,7 +58,7 @@ class OctoTree:
         
         return origin
     
-    def insert_point(self, point: tuple, diff_logodds: float=HIT_LOGODDS):
+    def insert_point(self, point: tuple, diff_logodds: float = HIT_LOGODDS):
         """
         Add an observation to the octo map.
 
@@ -71,7 +71,7 @@ class OctoTree:
 
         self._root.update(point, diff_logodds, self.origin, self.width, self._max_depth)
 
-    def ray_casting(self, point: tuple, diff_logodds: float):
+    def ray_casting(self, point: tuple):
         """
         Add an observation to the treemap.
 
@@ -93,9 +93,9 @@ class OctoTree:
         if not len(point) == 3:
             raise ValueError("Point shoule be tuple (x,y,z)")
 
-        res: bool = self._center[0] - self.radius <= point[0] < self._center + self.radius and \
-              self._center[1] - self.radius <= point[1] < self._center + self.radius and \
-              self._center[2] - self.radius <= point[2] < self._center + self.radius
+        res: bool = (self._center[0] - self.radius) <= point[0] < (self._center[0] + self.radius) and \
+                    (self._center[1] - self.radius <= point[1]) < (self._center[1] + self.radius) and \
+                    (self._center[2] - self.radius) <= point[2] < (self._center[2] + self.radius)
         return res
     
     def get_probability(self, point: tuple):
