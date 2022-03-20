@@ -58,21 +58,20 @@ class OctoTree:
         
         return origin
     
-    def insert_point(self, point: tuple, probability: float=HIT_LOGODDS):
+    def insert_point(self, point: tuple, diff_logodds: float=HIT_LOGODDS):
         """
         Add an observation to the octo map.
 
         Args:
             point: the coordinate of the ovservation lidar point --- (x,y,z): tuple
+            diff_logodds: the difference value of logodds
         """
         if not len(point) == 3:
             raise ValueError("Point shoule be tuple (x,y,z)")
-        if not 0 < probability < 1:
-            raise ValueError("Probability should be between 0.0 and 1.0") 
 
-        self._root.update(point, probability, self.origin, self.width, self._max_depth)
+        self._root.update(point, diff_logodds, self.origin, self.width, self._max_depth)
 
-    def ray_casting(self, point: tuple, probability: float=1.0):
+    def ray_casting(self, point: tuple, diff_logodds: float):
         """
         Add an observation to the treemap.
 
@@ -80,9 +79,7 @@ class OctoTree:
             point: the coordinate of the ovservation lidar point --- (x,y,z): tuple
         """
         if not len(point) == 3:
-            raise ValueError("Point shoule be tuple (x,y,z)")
-        if not 0 < probability < 1:
-            raise ValueError("Probability should be between 0.0 and 1.0")        
+            raise ValueError("Point shoule be tuple (x,y,z)")    
 
     def contains(self, point: tuple):
         """

@@ -1,24 +1,32 @@
 import math
+from Config import DEFAULT_LOGODDS
 
 
 class OctoNode:
-    def __init__(self, default_probability: float=0.5):
+    def __init__(self):
         """
-        Initiates a new OctoNode.
-
-        Args:
-            default_probability: the default probability of this node being occupied, 
-            the probability of non-leaf will be set as 0.
+        Initiates a new OctoNode, the probability of non-leaf will be set as 0.
         """
         self._children = None
-        self._log_odds = math.log(default_probability / (1 - default_probability))
+        self._log_odds = DEFAULT_LOGODDS
 
-    def is_leaf(self):
+    @property
+    def probability(self):
+        """
+        Returns:
+            occupancy probability of node --- float
+        """
+        odds: float = math.pow(math.e, self._log_odds)
+        probability: float = odds / (odds + 1)
+        
+        return probability
+
+    def has_children(self):
         """
         Returns:
             whether this is a leaf node --- bool
         """
-        return self._children is None
+        return self._children is not None
 
     def _split(self):
         """
@@ -77,44 +85,34 @@ class OctoNode:
                 origin[1] + (hwidth if index & 2 else 0),
                 origin[2] + (hwidth if index & 4 else 0))
 
-    def update(self, point, probability, origin, width, max_depth):
+    def update(self, point, diff_logodds, origin, width, max_depth):
         """
         Updates the node with a new observation.
 
         Args:
             point: the point coornidate of the observation --- (x,y,z): tuple
-            probability: probability of occupancy --- float
+            diff_logodds: the difference value of logodds --- float
             origin: origin of this node --- (x,y,z): tuple
             width: width of this node --- int
             max_depth: maximum depth this node can be branched --- int
         """
         if max_depth == 0:
-            self._update_probability(probability)
+            self._update_logodds(diff_logodds)
         else:
-            if self.is_leaf():
+            if not self.has_children():
                 self._split()
-                child_index = self.index(point, origin, width)
-                child_index = self.index(point, origin, width)
-                self._children[child_index].update(point, probability, self.origin(child_index, origin, width),
-                                                   width / 2, max_depth - 1)
+            child_index: int = self.index(point, origin, width)
+            self._children[child_index].update(point, diff_logodds, self.origin(child_index, origin, width), 
+                                               width / 2, max_depth - 1)
 
-    def _update_probability(self, probability):
+    def _update_logodds(self, diff_logodds):
         """
-        Updates the occupancy probability of the leaf node.
+        Updates the occupancy probability in logodds of the leaf node.
 
         Args:
-            probability: pre-defined probability --- float
+            diff_logodds: the difference value of logodds --- float
         """
-        self._log_odds += math.log(probability / (1 - probability))
-
-    @property
-    def probability(self):
-        """
-        Returns:
-            occupancy probability of node --- float
-        """
-        odds = math.pow(math.e, self._log_odds)
-        return odds / (odds + 1)
+        self._log_odds += diff_logodds
 
     def probability_at(self, point, origin, width):
         """
