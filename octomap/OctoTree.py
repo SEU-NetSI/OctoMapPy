@@ -1,6 +1,8 @@
 import math
 
-from Config import HIT_LOGODDS
+import numpy as np
+
+from Config import HIT_LOGODDS, TREE_RESOLUTION
 from octomap.OctoNode import OctoNode
 
 
@@ -72,15 +74,69 @@ class OctoTree:
 
         self._root.update(point, diff_logodds, self.origin, self.width, self._max_depth)
 
-    def ray_casting(self, point: tuple):
+    def ray_casting(self, uav_point: tuple, position_piont: tuple):
         """
         Add an observation to the treemap.
 
         Args:
             point: the coordinate of the ovservation lidar point --- (x,y,z): tuple
         """
-        if not len(point) == 3:
-            raise ValueError("Point shoule be tuple (x,y,z)")  
+
+    @staticmethod
+    def bresenham3D(self, startPoint, endPoint):
+        """
+        Use bresenham algorithm to return points on the ray's path
+        """
+        path = []
+
+        startPoint = [int(startPoint[0]), int(startPoint[1]), int(startPoint[2])]
+        endPoint = [int(endPoint[0]), int(endPoint[1]), int(endPoint[2])]
+
+        steepXY = (np.abs(endPoint[1] - startPoint[1]) > np.abs(endPoint[0] - startPoint[0]))
+        if steepXY:
+            startPoint[0], startPoint[1] = startPoint[1], startPoint[0]
+            endPoint[0], endPoint[1] = endPoint[1], endPoint[0]
+
+        steepXZ = (np.abs(endPoint[2] - startPoint[2]) > np.abs(endPoint[0] - startPoint[0]))
+        if steepXZ:
+            startPoint[0], startPoint[2] = startPoint[2], startPoint[0]
+            endPoint[0], endPoint[2] = endPoint[2], endPoint[0]
+
+        delta = [np.abs(endPoint[0] - startPoint[0]), np.abs(endPoint[1] - startPoint[1]),
+                 np.abs(endPoint[2] - startPoint[2])]
+
+        errorXY = delta[0] / 2
+        errorXZ = delta[0] / 2
+
+        step = [
+            -TREE_RESOLUTION if startPoint[0] > endPoint[0] else TREE_RESOLUTION,
+            -TREE_RESOLUTION if startPoint[1] > endPoint[1] else TREE_RESOLUTION,
+            -TREE_RESOLUTION if startPoint[2] > endPoint[2] else TREE_RESOLUTION
+        ]
+
+        y = startPoint[1]
+        z = startPoint[2]
+
+        for x in range(startPoint[0], endPoint[0], step[0]):
+            point = [x, y, z]
+            if steepXZ:
+                point[0], point[2] = point[2], point[0]
+            if steepXY:
+                point[0], point[1] = point[1], point[0]
+            """
+            print (point)
+            """
+            errorXY -= delta[1]
+            errorXZ -= delta[2]
+            if errorXY < 0:
+                y += step[1]
+                errorXY += delta[0]
+            if errorXZ < 0:
+                z += step[2]
+                errorXZ += delta[0]
+
+            path.append(point)
+        return path
 
     def contains(self, point: tuple):
         """
