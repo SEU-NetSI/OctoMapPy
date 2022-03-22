@@ -3,6 +3,7 @@ import numpy as np
 
 from Config import HIT_LOGODDS, TREE_RESOLUTION, MISS_LOGODDS
 from octomap.OctoNode import OctoNode
+from octomap.Visualization import Visualization
 
 
 class OctoTree:
@@ -29,6 +30,7 @@ class OctoTree:
         self._max_depth = max_depth
 
         self._root = OctoNode()
+        self._visualizer = Visualization()
 
     @property
     def radius(self):
@@ -174,3 +176,5 @@ class OctoTree:
 
         return probability
         
+    def visual(self):
+        leaf_nodes = self._visualizer.get_leaf_nodes(self._root)

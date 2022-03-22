@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+from octomap.OctoNode import OctoNode
+
 
 class Visualization:
     def __init__(self) -> None:
@@ -26,21 +28,23 @@ class Visualization:
 
         plt.show()
 
-    def levelOrder(self, root):
+    def get_leaf_nodes(self, root: OctoNode):
         """
 
         """
         if not root:
             return []
-        # 保存节点的队列
+      
+        leaf_nodes = []
         que = []
-        # 保存结果的列表
-        res = []
-        # 根元素入队列
+        
         que.append(root)
-        while len(que):
-            l = len(que)
+        que_l = len(que)
+            
         sub = []
+
+        for node in que:
+            if node.has_children:
 
         for i in range(l):
             current = que.pop(0)
@@ -48,7 +52,7 @@ class Visualization:
             for child in current.children:
                 que.append(child)
 
-        res.append(sub)
+            res.append(sub)
         return res
 
 
