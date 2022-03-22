@@ -2,7 +2,7 @@ import math
 
 import numpy as np
 
-from Config import HIT_LOGODDS, TREE_RESOLUTION
+from Config import HIT_LOGODDS, TREE_RESOLUTION, MISS_LOGODDS
 from octomap.OctoNode import OctoNode
 
 
@@ -66,24 +66,28 @@ class OctoTree:
         Add an observation to the octo map.
 
         Args:
-            point: the coordinate of the ovservation lidar point --- (x,y,z): tuple
+            point: the coordinate of the observation lidar point --- (x,y,z): tuple
             diff_logodds: the difference value of logodds
         """
         if not len(point) == 3:
-            raise ValueError("Point shoule be tuple (x,y,z)")
-
+            raise ValueError("Point should be tuple (x,y,z)")
         self._root.update(point, diff_logodds, self.origin, self.width, self._max_depth)
 
-    def ray_casting(self, uav_point: tuple, position_piont: tuple):
+    def ray_casting(self, start_point: tuple, end_point: tuple, diff_logodds: float = MISS_LOGODDS):
         """
-        Add an observation to the treemap.
+        Add the probability of the grid occupied by the ray path to the tree
 
         Args:
-            point: the coordinate of the ovservation lidar point --- (x,y,z): tuple
+            start_point: the coordinate of the sensor --- (x,y,z): tuple
+            end_point: the coordinate of the observation point  --- (x,y,z): tuple
+            diff_logodds: the difference value of logodds
         """
+        grid_path: list = self.bresenham3D(start_point, end_point)
+        for point in grid_path:
+            self._root.update(point, diff_logodds, self.origin, self.width, self._max_depth)
 
     @staticmethod
-    def bresenham3D(self, startPoint, endPoint):
+    def bresenham3D(startPoint, endPoint):
         """
         Use bresenham algorithm to return points on the ray's path
         """
@@ -148,7 +152,7 @@ class OctoTree:
             whether the point is contained --- bool
         """
         if not len(point) == 3:
-            raise ValueError("Point shoule be tuple (x,y,z)")
+            raise ValueError("Point should be tuple (x,y,z)")
 
         res: bool = (self._center[0] - self.radius) <= point[0] < (self._center[0] + self.radius) and \
                     (self._center[1] - self.radius <= point[1]) < (self._center[1] + self.radius) and \
