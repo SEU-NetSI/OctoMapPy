@@ -9,6 +9,7 @@ class OctoNode:
         """
         self._children = None
         self._log_odds = DEFAULT_LOGODDS
+        self._is_leaf = False
 
     @property
     def probability(self):
@@ -20,6 +21,13 @@ class OctoNode:
         probability: float = odds / (odds + 1)
         
         return probability
+    
+    def is_leaf(self):
+        """
+        Returns:
+            whether this node is leaf --- bool
+        """
+        return self._is_leaf
 
     def has_children(self):
         """
@@ -94,6 +102,7 @@ class OctoNode:
         """
         if max_depth == 0:
             self._update_logodds(diff_logodds)
+            self._is_leaf = True
         else:
             if not self.has_children():
                 self._split()
