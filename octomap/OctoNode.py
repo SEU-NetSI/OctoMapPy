@@ -1,5 +1,5 @@
 import math
-from Config import DEFAULT_LOGODDS
+from Config import DEFAULT_LOGODDS, OCCUPANY_LOGODDS, FREE_LOGODDS
 
 
 class OctoNode:
@@ -109,6 +109,10 @@ class OctoNode:
             diff_logodds: the difference value of logodds --- float
         """
         self._log_odds += diff_logodds
+        if self._log_odds >= OCCUPANY_LOGODDS:
+            self._log_odds = OCCUPANY_LOGODDS
+        if self._log_odds <= FREE_LOGODDS:
+            self._log_odds = FREE_LOGODDS
 
     def probability_at(self, point, origin, width):
         """
