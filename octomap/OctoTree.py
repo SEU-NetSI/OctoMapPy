@@ -1,5 +1,4 @@
 import math
-
 import numpy as np
 
 from Config import HIT_LOGODDS, TREE_RESOLUTION, MISS_LOGODDS
