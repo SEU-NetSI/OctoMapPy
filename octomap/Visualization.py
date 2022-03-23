@@ -84,9 +84,9 @@ class Visualization:
             occu_node[:,:,i] = node.get_origin()[1]/5
             occu_node[:,i,:] = node.get_origin()[2]/5
         for node in free_origin_to_coordinate:
-            free_node[] = node.get_origin().origin[0]/5
-            free_node[] = node.get_origin().origin[1]/5
-            free_node[] = node.get_origin().origin[2]/5
+            free_node[i,:,:] = node.get_origin()[0]/5
+            free_node[:,:,i] = node.get_origin()[1]/5
+            free_node[:,i,:] = node.get_origin()[2]/5
         occu_x = [x[0] for x in occu_node]
         occu_y = [x[1] for x in occu_node]
         occu_z = [x[2] for x in occu_node]
@@ -101,9 +101,9 @@ class Visualization:
 
         plt.show()
 
-def test(self):
+def test():
     cube = np.ones((3, 3, 3))
     print(cube)
 
 if __name__=="__main__":
-    test()
+   Visualization().show()
