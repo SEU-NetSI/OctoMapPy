@@ -123,6 +123,10 @@ class OctoNode:
         if self._log_odds <= FREE_LOGODDS:
             self._log_odds = FREE_LOGODDS
 
+    @property
+    def log_odds(self):
+        return self._log_odds
+
     def probability_at(self, point, origin, width):
         """
         Args:
@@ -138,3 +142,5 @@ class OctoNode:
         else:
             child_index = self.index(point, origin, width)
             return self._children[child_index].probability_at(point, self.origin(child_index, origin, width), width / 2)
+
+
