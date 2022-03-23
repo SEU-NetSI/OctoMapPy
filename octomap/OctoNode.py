@@ -36,6 +36,9 @@ class OctoNode:
         """
         return self._children is not None
 
+    def children(self):
+        return self._children
+
     def _split(self):
         """
         Splits the node into 8 child nodes.
@@ -123,8 +126,7 @@ class OctoNode:
         if self._log_odds <= FREE_LOGODDS:
             self._log_odds = FREE_LOGODDS
 
-    @property
-    def log_odds(self):
+    def get_log_odds(self):
         return self._log_odds
 
     def probability_at(self, point, origin, width):

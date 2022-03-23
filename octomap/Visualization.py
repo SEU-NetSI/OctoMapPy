@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+
+from octomap.Config import OCCUPANY_LOGODDS, FREE_LOGODDS
 from octomap.OctoNode import OctoNode
 
 
@@ -38,19 +40,30 @@ class Visualization:
         leaf_nodes = []
         queue = [root]
         while queue:
-            for node in queue:
-                if node.is_leaf():
-                    leaf_nodes.append(node.log_odds)
-            # 存储当前层的孩子节点列表
+            """
+            Store the list of child nodes of the current layer
+            """
             childNodes = []
             for node in queue:
-                # 若节点存在子节点，入队
-                if node.children:
-                    childNodes.extend(node.children)
-            # 更新队列为下一层的节点，继续遍历
+                if node.is_leaf():
+                    leaf_nodes.append(node)
+                else:
+                    childNodes.extend(node.children())
+            """
+            Update the queue to the node of the next layer and continue to traverse 
+            """
             queue = childNodes
         return leaf_nodes
 
+    @staticmethod
+    def req_leaf_node(leaf_nodes):
+        """
+        Store leaf nodes with deterministic probability
+        """
+        require_nodes = []
+        for node in leaf_nodes:
+            if node.get_log_odds() == OCCUPANY_LOGODDS or node.get_log_odds() == FREE_LOGODDS:
+                require_nodes.append(node)
 
 
 if __name__=="__main__":
