@@ -36,7 +36,7 @@ class OctoNode:
         """
         return self._children is not None
 
-    def children(self):
+    def get_children(self):
         return self._children
 
     def _split(self):
@@ -91,6 +91,9 @@ class OctoNode:
         return (origin[0] + (hwidth if index & 1 else 0),
                 origin[1] + (hwidth if index & 2 else 0),
                 origin[2] + (hwidth if index & 4 else 0))
+
+    def get_origin(self):
+        return self.origin()
 
     def update(self, point, diff_logodds, origin, width, max_depth):
         """
