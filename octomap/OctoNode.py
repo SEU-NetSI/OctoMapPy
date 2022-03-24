@@ -7,7 +7,7 @@ class OctoNode:
         """
         Initiates a new OctoNode, the probability of non-leaf will be set as 0.
         """
-        self._children = None
+        self._children = ()
         self._log_odds = DEFAULT_LOGODDS
         self._is_leaf = False
 
@@ -34,7 +34,7 @@ class OctoNode:
         Returns:
             whether this is a leaf node --- bool
         """
-        return self._children is not None
+        return self._children != ()
 
     def get_children(self):
         return self._children
@@ -44,8 +44,12 @@ class OctoNode:
         Splits the node into 8 child nodes.
         Child nodes are given the occupancy probability of this parent node as the initial probability
         """
-        temp: list = [OctoNode()] * 8
-        self._children = tuple(temp)
+        # temp: list = [OctoNode()] * 8
+        # self._children = tuple(temp)
+        self._children = (
+        OctoNode(), OctoNode(), OctoNode(),
+        OctoNode(), OctoNode(), OctoNode(),
+        OctoNode(), OctoNode())
 
     def index(self, point, origin, width):
         """
@@ -77,7 +81,7 @@ class OctoNode:
                (origin[2] <= point[2] < (origin[2] + width))
 
     @staticmethod
-    def origin(index: int, origin: tuple, width: int):
+    def cal_origin(index: int, origin: tuple, width: int):
         """
         Calculates the origin of the node with given index.
 
@@ -87,13 +91,14 @@ class OctoNode:
             width: the width of the parent node --- int
         """
         hwidth: int = int(width / 2)
+        node_origin = (origin[0] + (hwidth if index & 1 else 0),
+                      origin[1] + (hwidth if index & 2 else 0),
+                      origin[2] + (hwidth if index & 4 else 0))
 
-        return (origin[0] + (hwidth if index & 1 else 0),
-                origin[1] + (hwidth if index & 2 else 0),
-                origin[2] + (hwidth if index & 4 else 0))
+        return node_origin
 
     def get_origin(self):
-        return self.origin()
+        return self.origin
 
     def update(self, point, diff_logodds, origin, width, max_depth):
         """
@@ -106,6 +111,7 @@ class OctoNode:
             width: width of this node --- int
             max_depth: maximum depth this node can be branched --- int
         """
+        self.origin = origin
         if max_depth == 0:
             self._update_logodds(diff_logodds)
             self._is_leaf = True
@@ -113,7 +119,7 @@ class OctoNode:
             if not self.has_children():
                 self._split()
             child_index: int = self.index(point, origin, width)
-            self._children[child_index].update(point, diff_logodds, self.origin(child_index, origin, width), 
+            self._children[child_index].update(point, diff_logodds, self.cal_origin(child_index, origin, width), 
                                                width / 2, max_depth - 1)
 
     def _update_logodds(self, diff_logodds):
@@ -146,6 +152,6 @@ class OctoNode:
             return self.probability
         else:
             child_index = self.index(point, origin, width)
-            return self._children[child_index].probability_at(point, self.origin(child_index, origin, width), width / 2)
+            return self._children[child_index].probability_at(point, self.cal_origin(child_index, origin, width), width / 2)
 
 

@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from octomap.Config import OCCUPANY_LOGODDS, FREE_LOGODDS
-from octomap.OctoNode import OctoNode
+from Config import OCCUPANY_LOGODDS, FREE_LOGODDS
+from OctoNode import OctoNode
 
 
 class Visualization:
@@ -28,8 +28,7 @@ class Visualization:
         ax.voxels(voxelarray, facecolors=colors, edgecolor='k')
         plt.show()
 
-    @staticmethod
-    def get_leaf_nodes(root: OctoNode):
+    def get_leaf_nodes(self, root: OctoNode):
         """
         Return leaf nodes for tree traversal
         """
@@ -52,7 +51,11 @@ class Visualization:
             Update the queue to the node of the next layer and continue to traverse 
             """
             queue = childNodes
-        return leaf_nodes
+
+        print("leaf_nodes: ", len(leaf_nodes))
+        require_nodes = self.req_leaf_node(leaf_nodes)
+        print("require_nodes", len(require_nodes))
+        self.show(require_nodes)
 
     @staticmethod
     def req_leaf_node(leaf_nodes):
@@ -76,38 +79,41 @@ class Visualization:
         Separating occupied and free points 
         """
         for node in require_nodes:
-            if require_nodes.get_log_odds() == OCCUPANY_LOGODDS:
+            if node.get_log_odds() == OCCUPANY_LOGODDS:
                 occu_origin_to_coordinate.append(node)
-            if require_nodes.get_log_odds() == FREE_LOGODDS:
+            if node.get_log_odds() == FREE_LOGODDS:
                 free_origin_to_coordinate.append(node)
+        print("occu_origin_to_coordinate:", len(occu_origin_to_coordinate))
         occu_node = []
         free_node = []
         """
         Use list to store the corresponding coordinates 
         """
         for node in occu_origin_to_coordinate:
-            new_node = (node.get_origin()[0]/5, node.get_origin()[1]/5, node.get_origin()[2]/5)
+            # print(node.get_origin())
+            new_node = (int(node.origin[0] / 4), int(node.origin[1] / 4), int(node.origin[2] / 4))
             occu_node.append(new_node)
         for node in free_origin_to_coordinate:
-            new_node = (node.get_origin()[0] / 5, node.get_origin()[1] / 5, node.get_origin()[2] / 5)
+            new_node = (int(node.get_origin()[0] / 4), int(node.get_origin()[1] / 4), int(node.get_origin()[2] / 4))
             free_node.append(new_node)
+        print("occu_node_list:", occu_node)
         """
         Draw a 3D occupancy grid 
         """
-        x, y, z = np.indices((80, 80, 80))
+        x, y, z = np.indices((128, 128, 128))
         ax = plt.figure().add_subplot(projection='3d')
         for i in range(len(occu_node)):
-            occu = (x >= x[0]) & (x < x[0]+1) & (y >= x[1]) & (y < x[1]+1) & (z >= x[3]) & (z < x[3]+1)
-            voxel = occu
-            colors = np.empty(voxel.shape, dtype=object)
+            occu = (x >= occu_node[i][0]) & (x < occu_node[i][0] + 1) & (y >= occu_node[i][1]) & (y < occu_node[i][1] + 1) & (z >= occu_node[i][2]) & (z < occu_node[i][2] + 1)
+            # voxel = occu
+            colors = np.empty(occu.shape, dtype=object)
             colors[occu] = 'red'
-            ax.voxels(voxel, facecolors=colors, edgecolor='k')
-        for i in range(len(free_node)):
-            free = (x >= x[0]) & (x < x[0]+1) & (y >= x[1]) & (y < x[1]+1) & (z >= x[3]) & (z < x[3]+1)
-            voxel = free
-            colors = np.empty(voxel.shape, dtype=object)
-            colors[free] = 'green'
-            ax.voxels(voxel, facecolors=colors, edgecolor='k')
+            ax.voxels(occu, facecolors=colors, edgecolor='k')
+        # for i in range(len(free_node)):
+        #     free = (x >= x[0]) & (x < x[0]+1) & (y >= x[1]) & (y < x[1]+1) & (z >= x[3]) & (z < x[3]+1)
+        #     voxel = free
+        #     colors = np.empty(voxel.shape, dtype=object)
+        #     colors[free] = 'green'
+        #     ax.voxels(voxel, facecolors=colors, edgecolor='k')
         plt.show()
 
     @staticmethod
@@ -127,7 +133,7 @@ class Visualization:
             colors[cubem] = 'blue'
             ax.voxels(voxelarray, facecolors=colors, edgecolor='k')
 
-        plt.show()
+        # plt.show()
 
 
 if __name__ == "__main__":

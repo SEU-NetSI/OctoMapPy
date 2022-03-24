@@ -2,8 +2,8 @@ import math
 import numpy as np
 
 from Config import HIT_LOGODDS, TREE_RESOLUTION, MISS_LOGODDS
-from octomap.OctoNode import OctoNode
-from octomap.Visualization import Visualization
+from OctoNode import OctoNode
+from Visualization import Visualization
 
 
 class OctoTree:
@@ -176,5 +176,5 @@ class OctoTree:
 
         return probability
         
-    def visual(self):
-        leaf_nodes = self._visualizer.get_leaf_nodes(self._root)
+    def visualize(self):
+        self._visualizer.get_leaf_nodes(self._root)
