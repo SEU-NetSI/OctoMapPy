@@ -80,30 +80,55 @@ class Visualization:
         occu_node = np.ones((3, 3, 3))
         free_node = np.ones((3, 3, 3))
         for node in occu_origin_to_coordinate:
-            occu_node[i,:,:] = node.get_origin()[0]/5
-            occu_node[:,:,i] = node.get_origin()[1]/5
-            occu_node[:,i,:] = node.get_origin()[2]/5
+            occu_node[0].append(node.get_origin()[0]/5)
+            occu_node[1].append(node.get_origin()[1]/5)
+            occu_node[2].append(node.get_origin()[2]/5)
         for node in free_origin_to_coordinate:
-            free_node[i,:,:] = node.get_origin()[0]/5
-            free_node[:,:,i] = node.get_origin()[1]/5
-            free_node[:,i,:] = node.get_origin()[2]/5
-        occu_x = [x[0] for x in occu_node]
-        occu_y = [x[1] for x in occu_node]
-        occu_z = [x[2] for x in occu_node]
-
+            free_node[0].append(node.get_origin()[0]/5)
+            free_node[0].append(node.get_origin()[1]/5)
+            free_node[0].append(node.get_origin()[2]/5)
+        for i in range(len(occu_node)):
+            occu_node[i] = (x >= x[0]) & (x < x[0]+1) & (y >= x[1]) & (y < x[1]+1) & (z >= x[3]) & (z < x[3]+1)
+        for i in range(len(free_node)):
+            free_node[i] = (x >= x[0]) & (x < x[0]+1) & (y >= x[1]) & (y < x[1]+1) & (z >= x[3]) & (z < x[3]+1)
+        voxel = occu_node | free_node
+        colors = np.empty(voxel.shape, dtype=object)
+        colors[occu_node] = 'red'
+        colors[free_node] = 'green'
         ax = plt.figure().add_subplot(projection='3d')
-        ax.scatter(occu_x, occu_y, occu_z, c='r')
-
-
-
-
-
+        ax.voxels(voxel, facecolors=colors, edgecolor='k')
+        # occu_x = [x[0] for x in occu_node]
+        # occu_y = [x[1] for x in occu_node]
+        # occu_z = [x[2] for x in occu_node]
+        #
+        # free_x = [x[0] for x in occu_node]
+        # free_y = [x[1] for x in occu_node]
+        # free_z = [x[2] for x in occu_node]
+        # ax = plt.figure().add_subplot(projection='3d')
+        # ax.scatter(occu_x, occu_y, occu_z, c='r')
+        # ax.scatter(free_x, free_y, free_z, c='g')
 
         plt.show()
 
-def test():
-    cube = np.ones((3, 3, 3))
-    print(cube)
+    def test(self):
+        cubem = None
+        voxelarray = cubem
+        ax = plt.figure().add_subplot(projection='3d')
+        colors = np.empty(voxelarray.shape, dtype=object)
+        m = [(1, 1, 1), (2, 2, 2), (3, 3, 3)]
+        for i in range(3):
+            cubem = (x >= m[i][0]) & (x < m[i][0] + 1) & (y >= m[i][1]) & (y < m[i][1] + 1) & (z >= m[i][2]) & (
+                        z < m[i][2] + 1)
+            voxelarray = cubem
+            ax.voxels(voxelarray, facecolors=colors, edgecolor='k')
+        colors[cubem] = 'blue'
 
-if __name__=="__main__":
-   Visualization().show()
+        plt.show()
+
+#
+# def test():
+#     cube = np.ones((3, 3, 3))
+#     print(cube)
+#
+# if __name__=="__main__":
+#    Visualization().show()
