@@ -11,23 +11,21 @@ class Visualization:
 
     @staticmethod
     def display():
+        """
+        Official Reference Visualization Module
+        """
         x, y, z = np.indices((8, 8, 8))
-
         cube1 = (x < 3) & (y < 3) & (z < 3)
         print(cube1)
         cube2 = (x >= 5) & (y >= 5) & (z >= 5)
         link = abs(x - y) + abs(y - z) + abs(z - x) <= 2
-
         voxelarray = cube1 | cube2 | link
-
         colors = np.empty(voxelarray.shape, dtype=object)
         colors[link] = 'red'
         colors[cube1] = 'blue'
         colors[cube2] = 'green'
-
         ax = plt.figure().add_subplot(projection='3d')
         ax.voxels(voxelarray, facecolors=colors, edgecolor='k')
-
         plt.show()
 
     @staticmethod
@@ -69,22 +67,34 @@ class Visualization:
 
     @staticmethod
     def show(require_nodes):
+        """
+        visualize the occupied/free points
+        """
         occu_origin_to_coordinate = []
         free_origin_to_coordinate = []
+        """
+        Separating occupied and free points 
+        """
         for node in require_nodes:
             if require_nodes.get_log_odds() == OCCUPANY_LOGODDS:
                 occu_origin_to_coordinate.append(node)
             if require_nodes.get_log_odds() == FREE_LOGODDS:
                 free_origin_to_coordinate.append(node)
-        x, y, z = np.indices((80, 80, 80))
         occu_node = []
         free_node = []
+        """
+        Use list to store the corresponding coordinates 
+        """
         for node in occu_origin_to_coordinate:
             new_node = (node.get_origin()[0]/5, node.get_origin()[1]/5, node.get_origin()[2]/5)
             occu_node.append(new_node)
         for node in free_origin_to_coordinate:
             new_node = (node.get_origin()[0] / 5, node.get_origin()[1] / 5, node.get_origin()[2] / 5)
             free_node.append(new_node)
+        """
+        Draw a 3D occupancy grid 
+        """
+        x, y, z = np.indices((80, 80, 80))
         ax = plt.figure().add_subplot(projection='3d')
         for i in range(len(occu_node)):
             occu = (x >= x[0]) & (x < x[0]+1) & (y >= x[1]) & (y < x[1]+1) & (z >= x[3]) & (z < x[3]+1)
@@ -98,13 +108,15 @@ class Visualization:
             colors = np.empty(voxel.shape, dtype=object)
             colors[free] = 'green'
             ax.voxels(voxel, facecolors=colors, edgecolor='k')
-
         plt.show()
 
-    def test(self):
+    @staticmethod
+    def test():
+        """
+        test function
+        """
         x, y, z = np.indices((11, 11, 11))
         ax = plt.figure().add_subplot(projection='3d')
-
         m = [(1, 1, 1), (2, 2, 2), (3, 3, 3)]
         print(len(m))
         for i in range(len(m)):
@@ -116,13 +128,6 @@ class Visualization:
             ax.voxels(voxelarray, facecolors=colors, edgecolor='k')
 
         plt.show()
-
-
-#
-# def test():
-#     cube = np.ones((3, 3, 3))
-#     print(cube)
-#
 
 
 if __name__ == "__main__":
