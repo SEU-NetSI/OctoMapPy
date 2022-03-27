@@ -1,6 +1,5 @@
 import logging
 import math
-import time
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
@@ -8,13 +7,13 @@ from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
 import numpy as np
 
-from octomap.Config import PLOT_SENSOR_DOWN, SENSOR_TH, URI
+from Config import PLOT_SENSOR_DOWN, SENSOR_TH, URI
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
 
-class Input:
-    def __init__(self) -> None:
+class Inputter:
+    def __init__(self):
         self.main()
 
     def main(self):
@@ -23,7 +22,10 @@ class Input:
         self.cf = Crazyflie(ro_cache=None, rw_cache='cache')
 
         # Connect callbacks from the Crazyflie API
-        self.cf.connected.add_callback(self.connected)
+        try:
+            self.cf.connected.add_callback(self.connected)
+        except:
+            print ("Connect failed.")
         self.cf.disconnected.add_callback(self.disconnected)
 
         # Connect to the Crazyflie
@@ -34,20 +36,20 @@ class Input:
 
         # The definition of the logconfig
         lmap = LogConfig(name='Mapping', period_in_ms=100)
-        lmap.add_variable('stateEstimate.x')
-        lmap.add_variable('stateEstimate.y')
-        lmap.add_variable('stateEstimate.z')
+        lmap.add_variable('stateEstimateZ.x')
+        lmap.add_variable('stateEstimateZ.y')
+        lmap.add_variable('stateEstimateZ.z')
 
-        lmap.add_variable('range.front')
-        lmap.add_variable('range.back')
+        # lmap.add_variable('range.front')
+        # lmap.add_variable('range.back')
         lmap.add_variable('range.up')
-        lmap.add_variable('range.left')
-        lmap.add_variable('range.right')
-        lmap.add_variable('range.zrange')
+        # lmap.add_variable('range.left')
+        # lmap.add_variable('range.right')
+        # lmap.add_variable('range.zrange')
 
-        lmap.add_variable('stabilizer.roll')
-        lmap.add_variable('stabilizer.pitch')
-        lmap.add_variable('stabilizer.yaw')
+        # lmap.add_variable('stabilizer.roll')
+        # lmap.add_variable('stabilizer.pitch')
+        # lmap.add_variable('stabilizer.yaw')
 
         try:
             self.cf.log.add_config(lmap)
@@ -59,24 +61,28 @@ class Input:
         except AttributeError:
             print('Could not add Measurement log config, bad configuration.')
 
+    def disconnected(self, URI):
+        print('Disconnected')
+
     def mapping_data(self, timestamp, data, logconf):
         measurement = {
-            'x': data['stateEstimate.x'],
-            'y': data['stateEstimate.y'],
-            'y': data['stateEstimate.z'],
+            'x': data['stateEstimateZ.x'],
+            'y': data['stateEstimateZ.y'],
+            'z': data['stateEstimateZ.z'],
 
-            'roll': data['stabilizer.roll'],
-            'pitch': data['stabilizer.pitch'],
-            'yaw': data['stabilizer.yaw'],
+            # 'roll': data['stabilizer.roll'],
+            # 'pitch': data['stabilizer.pitch'],
+            # 'yaw': data['stabilizer.yaw'],
 
             'front': data['range.front'],
-            'back': data['range.back'],
-            'up': data['range.up'],
-            'down': data['range.zrange'],
-            'left': data['range.left'],
-            'right': data['range.right']
+            # 'back': data['range.back'],
+            # 'up': data['range.up'],
+            # 'down': data['range.zrange'],
+            # 'left': data['range.left'],
+            # 'right': data['range.right']
         }
-        self.get_end_point(measurement)
+        print(measurement)
+        # self.get_end_point(measurement)
         # self.canvas.set_measurement(measurement)
 
     def rot(self, roll, pitch, yaw, origin, point):
@@ -142,9 +148,9 @@ class Input:
                      
     def get_end_point(self, measurement: dict):
         start_point = [
-            measurement['stateEstimate.x'],
-            measurement['stateEstimate.y'],
-            measurement['stateEstimate.z']
+            measurement['stateEstimateZ.x'],
+            measurement['stateEstimateZ.y'],
+            measurement['stateEstimateZ.z']
         ]
 
         data = self.rotate_and_create_points(measurement, start_point)
