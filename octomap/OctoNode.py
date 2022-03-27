@@ -153,5 +153,3 @@ class OctoNode:
         else:
             child_index = self.index(point, origin, width)
             return self._children[child_index].probability_at(point, self.cal_origin(child_index, origin, width), width / 2)
-
-

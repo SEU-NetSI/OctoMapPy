@@ -83,6 +83,11 @@ class OctoTree:
             end_point: the coordinate of the observation point  --- (x,y,z): tuple
             diff_logodds: the difference value of logodds
         """
+        if len(start_point) != 3 or len(end_point) != 3:
+            raise ValueError("Point should be tuple (x,y,z)")
+        # insert occu node
+        self.insert_point(end_point)
+        # insert free node
         grid_path: list = self.bresenham3D(start_point, end_point)
         for point in grid_path:
             self._root.update(point, diff_logodds, self.origin, self.width, self._max_depth)
@@ -96,6 +101,7 @@ class OctoTree:
 
         startPoint = [int(startPoint[0]), int(startPoint[1]), int(startPoint[2])]
         endPoint = [int(endPoint[0]), int(endPoint[1]), int(endPoint[2])]
+        endpoint_origin = [int(endPoint[0] / TREE_RESOLUTION) * TREE_RESOLUTION, int(endPoint[1] / TREE_RESOLUTION) * TREE_RESOLUTION, int(endPoint[2] / TREE_RESOLUTION) * TREE_RESOLUTION]
 
         steepXY = (np.abs(endPoint[1] - startPoint[1]) > np.abs(endPoint[0] - startPoint[0]))
         if steepXY:
@@ -140,7 +146,8 @@ class OctoTree:
                 z += step[2]
                 errorXZ += delta[0]
 
-            path.append(point)
+            if (point != endpoint_origin):
+                path.append(point)
         return path
 
     def contains(self, point: tuple):
@@ -156,7 +163,7 @@ class OctoTree:
             raise ValueError("Point should be tuple (x,y,z)")
 
         res: bool = (self._center[0] - self.radius) <= point[0] < (self._center[0] + self.radius) and \
-                    (self._center[1] - self.radius <= point[1]) < (self._center[1] + self.radius) and \
+                    (self._center[1] - self.radius) <= point[1] < (self._center[1] + self.radius) and \
                     (self._center[2] - self.radius) <= point[2] < (self._center[2] + self.radius)
         return res
     
@@ -177,4 +184,4 @@ class OctoTree:
         return probability
         
     def visualize(self):
-        self._visualizer.get_leaf_nodes(self._root)
+        self._visualizer.visualize(self._root)
