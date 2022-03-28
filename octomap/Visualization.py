@@ -109,10 +109,15 @@ class Visualization:
         """
         indice_length = int(math.pow(2, TREE_MAX_DEPTH))
         x, y, z = np.indices((indice_length, indice_length, indice_length))
+        
+        # x = np.arange(-indice_length, indice_length) + 5
+        # y = np.arange(-indice_length, indice_length) + 5
+        # z = np.arange(-indice_length, indice_length) + 5
         ax = plt.figure().add_subplot(projection='3d')
         
         for i in range(len(occu_node_coor_list)):
             occu_voxel = (x >= occu_node_coor_list[i][0]) & (x < occu_node_coor_list[i][0] + 1) & (y >= occu_node_coor_list[i][1]) & (y < occu_node_coor_list[i][1] + 1) & (z >= occu_node_coor_list[i][2]) & (z < occu_node_coor_list[i][2] + 1)
+            print(occu_voxel)
             colors = np.empty(occu_voxel.shape, dtype=object)
             colors[occu_voxel] = 'red'
             ax.voxels(occu_voxel, facecolors=colors, edgecolor='k')
