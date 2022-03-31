@@ -8,12 +8,16 @@ from cflib.crazyflie.log import LogConfig
 import numpy as np
 
 from Config import PLOT_SENSOR_DOWN, SENSOR_TH, URI
+from Config import TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION
+from OctoTree import OctoTree
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
 
 class Inputter:
     def __init__(self):
+        self.start_point_list = []
+        self.end_point_list = []
         self.main()
 
     def main(self):
@@ -30,6 +34,13 @@ class Inputter:
 
         # Connect to the Crazyflie
         self.cf.open_link(URI)
+        
+    
+    def after(self):
+        myTree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
+        for index in range(len(self.end_point_list)):
+            myTree.ray_casting(self.start_point_list[index], self.end_point_list[index])
+        myTree.visualize()
     
     def connected(self, URI):
         print('We are now connected to {}'.format(URI))
@@ -42,14 +53,14 @@ class Inputter:
 
         # lmap.add_variable('range.front')
         # lmap.add_variable('range.back')
-        lmap.add_variable('range.up')
+        lmap.add_variable('range.front')
         # lmap.add_variable('range.left')
         # lmap.add_variable('range.right')
         # lmap.add_variable('range.zrange')
 
-        # lmap.add_variable('stabilizer.roll')
-        # lmap.add_variable('stabilizer.pitch')
-        # lmap.add_variable('stabilizer.yaw')
+        lmap.add_variable('stabilizer.roll')
+        lmap.add_variable('stabilizer.pitch')
+        lmap.add_variable('stabilizer.yaw')
 
         try:
             self.cf.log.add_config(lmap)
@@ -63,6 +74,8 @@ class Inputter:
 
     def disconnected(self, URI):
         print('Disconnected')
+        print(self.start_point_list)
+        print(self.end_point_list)
 
     def mapping_data(self, timestamp, data, logconf):
         measurement = {
@@ -70,9 +83,9 @@ class Inputter:
             'y': data['stateEstimateZ.y'],
             'z': data['stateEstimateZ.z'],
 
-            # 'roll': data['stabilizer.roll'],
-            # 'pitch': data['stabilizer.pitch'],
-            # 'yaw': data['stabilizer.yaw'],
+            'roll': data['stabilizer.roll'],
+            'pitch': data['stabilizer.pitch'],
+            'yaw': data['stabilizer.yaw'],
 
             'front': data['range.front'],
             # 'back': data['range.back'],
@@ -82,10 +95,11 @@ class Inputter:
             # 'right': data['range.right']
         }
         print(measurement)
-        # self.get_end_point(measurement)
+        self.get_end_point(measurement)
         # self.canvas.set_measurement(measurement)
 
     def rot(self, roll, pitch, yaw, origin, point):
+        
         cosr = math.cos(math.radians(roll))
         cosp = math.cos(math.radians(pitch))
         cosy = math.cos(math.radians(yaw))
@@ -148,12 +162,21 @@ class Inputter:
                      
     def get_end_point(self, measurement: dict):
         start_point = [
-            measurement['stateEstimateZ.x'],
-            measurement['stateEstimateZ.y'],
-            measurement['stateEstimateZ.z']
+            int(measurement['x']),
+            int(measurement['y']),
+            int(measurement['z'])
         ]
+        
+        data = (int(start_point[0] + measurement['front']/10), int(start_point[1]), int(start_point[2]))
+        self.end_point_list.append(data)
+        self.start_point_list.append(tuple(start_point))
+        print(data)
 
-        data = self.rotate_and_create_points(measurement, start_point)
+        if len(self.end_point_list) == 100:
+            self.cf.close_link()
+
+        # data = self.rotate_and_create_points(measurement, start_point)
+       
         return data
 
         # TODO: 1->6
