@@ -99,7 +99,13 @@ class Inputter:
         # self.canvas.set_measurement(measurement)
 
     def rot(self, roll, pitch, yaw, origin, point):
+        """
+        Calculate the real coordinates of the target using two points
+
+        origin:Sensor location coordinates
+        point:position coordinates return using sensor distance
         
+        """
         cosr = math.cos(math.radians(roll))
         cosp = math.cos(math.radians(pitch))
         cosy = math.cos(math.radians(yaw))
@@ -128,34 +134,34 @@ class Inputter:
         tmp2 = np.dot(rot, tmp)
         return np.add(tmp2, origin)
 
-    def rotate_and_create_points(self, m, start_point):
+    def rotate_and_create_points(self, measurement, start_point):
         data = []
-        roll = m['roll']
-        pitch = -m['pitch']
-        yaw = m['yaw']
+        roll = measurement['roll']
+        pitch = -measurement['pitch']
+        yaw = measurement['yaw']
 
-        # if (m['up'] < SENSOR_TH):
-        #     up = [start_point[0], start_point[1], start_point[2] + m['up'] / 1000.0]
+        # if (measurement['up'] < SENSOR_TH):
+        #     up = [start_point[0], start_point[1], start_point[2] + measurement['up'] / 1000.0]
         #     data.append(self.rot(roll, pitch, yaw, start_point, up))
 
-        # if (m['down'] < SENSOR_TH and PLOT_SENSOR_DOWN):
-        #     down = [start_point[0], start_point[1], start_point[2] - m['down'] / 1000.0]
+        # if (measurement['down'] < SENSOR_TH and PLOT_SENSOR_DOWN):
+        #     down = [start_point[0], start_point[1], start_point[2] - measurement['down'] / 1000.0]
         #     data.append(self.rot(roll, pitch, yaw, start_point, down))
 
-        # if (m['left'] < SENSOR_TH):
-        #     left = [start_point[0], start_point[1] + m['left'] / 1000.0, start_point[2]]
+        # if (measurement['left'] < SENSOR_TH):
+        #     left = [start_point[0], start_point[1] + measurement['left'] / 1000.0, start_point[2]]
         #     data.append(self.rot(roll, pitch, yaw, start_point, left))
 
-        # if (m['right'] < SENSOR_TH):
-        #     right = [start_point[0], start_point[1] - m['right'] / 1000.0, start_point[2]]
+        # if (measurement['right'] < SENSOR_TH):
+        #     right = [start_point[0], start_point[1] - measurement['right'] / 1000.0, start_point[2]]
         #     data.append(self.rot(roll, pitch, yaw, start_point, right))
 
-        if (m['front'] < SENSOR_TH):
-            front = [start_point[0] + m['front'] / 1000.0, start_point[1], start_point[2]]
+        if (measurement['front'] < SENSOR_TH):
+            front = [start_point[0] + measurement['front'] / 10, start_point[1], start_point[2]]
             data.append(self.rot(roll, pitch, yaw, start_point, front))
 
-        # if (m['back'] < SENSOR_TH):
-        #     back = [start_point[0] - m['back'] / 1000.0, start_point[1], start_point[2]]
+        # if (measurement['back'] < SENSOR_TH):
+        #     back = [start_point[0] - measurement['back'] / 1000.0, start_point[1], start_point[2]]
         #     data.append(self.rot(roll, pitch, yaw, start_point, back))
 
         return data
@@ -166,8 +172,8 @@ class Inputter:
             int(measurement['y']),
             int(measurement['z'])
         ]
-        
-        data = (int(start_point[0] + measurement['front']/10), int(start_point[1]), int(start_point[2]))
+        data = self.rotate_and_create_points(measurement, start_point)
+        # data = (int(start_point[0] + measurement['front']/10), int(start_point[1]), int(start_point[2]))
         self.end_point_list.append(data)
         self.start_point_list.append(tuple(start_point))
         print(data)
@@ -175,8 +181,6 @@ class Inputter:
         if len(self.end_point_list) == 100:
             self.cf.close_link()
 
-        # data = self.rotate_and_create_points(measurement, start_point)
-       
         return data
 
         # TODO: 1->6
