@@ -110,7 +110,7 @@ class Visualization:
         indice_length = int(math.pow(2, TREE_MAX_DEPTH))
         x, y, z = np.indices((indice_length, indice_length, indice_length))
 
-        ax = plt.figure().add_subplot(projection='3d')
+        ax = plt.figure(figsize=(20,20)).add_subplot(projection='3d')
         # ax.set_xlim(-indice_length, indice_length)
         # ax.set_ylim(-indice_length, indice_length)
         # ax.set_zlim(-indice_length, indice_length)
@@ -118,7 +118,7 @@ class Visualization:
         # ax.set_ylabel('y')
         # ax.set_zlabel('z')
         for i in range(len(occu_node_coor_list)):
-            occu_voxel = (x >= occu_node_coor_list[i][0] + 50) & (x < occu_node_coor_list[i][0] + 1 + 50) & (y >= occu_node_coor_list[i][1] + 50) & (y < occu_node_coor_list[i][1] + 1 + 50) & (z >= occu_node_coor_list[i][2]) & (z < occu_node_coor_list[i][2] + 1 + 10)
+            occu_voxel = (x >= occu_node_coor_list[i][0] + 50) & (x < occu_node_coor_list[i][0] + 1 + 50) & (y >= occu_node_coor_list[i][1] + 50) & (y < occu_node_coor_list[i][1] + 1 + 50) & (z >= occu_node_coor_list[i][2] + 10) & (z < occu_node_coor_list[i][2] + 1 + 10)
             colors = np.empty(occu_voxel.shape, dtype=object)
             colors[occu_voxel] = 'red'
             ax.voxels(occu_voxel, facecolors=colors, edgecolor='k')
@@ -137,7 +137,7 @@ class Visualization:
 
             # print(type(free_node_coor_list[i][0]))
         plt.show()
-        # plt.savefig('./map.jpg')
+        # plt.savefig('./map.jpg', dpi=1200)
 
 
 if __name__ == "__main__":
