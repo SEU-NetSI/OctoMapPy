@@ -107,7 +107,7 @@ class Visualization:
         """
         Draw a 3D occupancy grid 
         """
-        indice_length = int(math.pow(TREE_RESOLUTION, TREE_MAX_DEPTH))
+        indice_length = int(math.pow(2, TREE_MAX_DEPTH))
         x, y, z = np.indices((indice_length, indice_length, indice_length))
 
         ax = plt.figure().add_subplot(projection='3d')
@@ -137,6 +137,7 @@ class Visualization:
 
             # print(type(free_node_coor_list[i][0]))
         plt.show()
+        # plt.savefig('./map.jpg')
 
 
 if __name__ == "__main__":
