@@ -107,34 +107,34 @@ class Visualization:
         """
         Draw a 3D occupancy grid 
         """
-        indice_length = int(math.pow(2, TREE_MAX_DEPTH-1))
-        # x, y, z = np.indices((indice_length, indice_length, indice_length))
+        indice_length = int(math.pow(TREE_RESOLUTION, TREE_MAX_DEPTH))
+        x, y, z = np.indices((indice_length, indice_length, indice_length))
 
-        # x = np.arange(-indice_length, indice_length) + 5
-        # y = np.arange(-indice_length, indice_length) + 5
-        # z = np.arange(-indice_length, indice_length) + 5
-        ax = plt.figure(figsize=(10,10)).add_subplot(projection='3d')
-        ax.set_xlim(-indice_length, indice_length)
-        ax.set_ylim(-indice_length, indice_length)
-        ax.set_zlim(-indice_length, indice_length)
-        ax.set_xlabel('x')
-        ax.set_ylabel('y')
-        ax.set_zlabel('z')
+        ax = plt.figure().add_subplot(projection='3d')
+        # ax.set_xlim(-indice_length, indice_length)
+        # ax.set_ylim(-indice_length, indice_length)
+        # ax.set_zlim(-indice_length, indice_length)
+        # ax.set_xlabel('x')
+        # ax.set_ylabel('y')
+        # ax.set_zlabel('z')
         for i in range(len(occu_node_coor_list)):
-            # occu_voxel = (x >= occu_node_coor_list[i][0]) & (x < occu_node_coor_list[i][0] + 1) & (y >= occu_node_coor_list[i][1]) & (y < occu_node_coor_list[i][1] + 1) & (z >= occu_node_coor_list[i][2]) & (z < occu_node_coor_list[i][2] + 1)
-            # colors = np.empty(occu_voxel.shape, dtype=object)
-            # colors[occu_voxel] = 'red'
-            # ax.voxels(occu_voxel, facecolors=colors, edgecolor='k')
-            ax.scatter3D(occu_node_coor_list[i][0], occu_node_coor_list[i][1], occu_node_coor_list[i][2], marker='s',
-                         c='r', s=70)
+            occu_voxel = (x >= occu_node_coor_list[i][0] + 50) & (x < occu_node_coor_list[i][0] + 1 + 50) & (y >= occu_node_coor_list[i][1] + 50) & (y < occu_node_coor_list[i][1] + 1 + 50) & (z >= occu_node_coor_list[i][2]) & (z < occu_node_coor_list[i][2] + 1 + 10)
+            colors = np.empty(occu_voxel.shape, dtype=object)
+            colors[occu_voxel] = 'red'
+            ax.voxels(occu_voxel, facecolors=colors, edgecolor='k')
+            
+            # ax.scatter3D(occu_node_coor_list[i][0], occu_node_coor_list[i][1], occu_node_coor_list[i][2], marker='s',
+            #              c='r', s=70)
 
         for i in range(len(free_node_coor_list)):
-            # free_voxel = (x >= free_node_coor_list[i][0]) & (x < free_node_coor_list[i][0] + 1) & (y >= free_node_coor_list[i][1]) & (y < free_node_coor_list[i][1] + 1) & (z >= free_node_coor_list[i][2]) & (z < free_node_coor_list[i][2] + 1)
-            # colors = np.empty(free_voxel.shape, dtype=object)
-            # colors[free_voxel] = 'green'
-            # ax.voxels(free_voxel, facecolors=colors, edgecolor='k')
-             ax.scatter3D(free_node_coor_list[i][0], free_node_coor_list[i][1], free_node_coor_list[i][2], marker = 's',
-                          c='g', s =70)
+            free_voxel = (x >= free_node_coor_list[i][0] + 50) & (x < free_node_coor_list[i][0] + 1 + 50) & (y >= free_node_coor_list[i][1] + 50) & (y < free_node_coor_list[i][1] + 1 + 50) & (z >= free_node_coor_list[i][2] + 10) & (z < free_node_coor_list[i][2] + 1 + 10)
+            colors = np.empty(free_voxel.shape, dtype=object)
+            colors[free_voxel] = 'green'
+            ax.voxels(free_voxel, facecolors=colors, edgecolor='k')
+
+            #  ax.scatter3D(free_node_coor_list[i][0], free_node_coor_list[i][1], free_node_coor_list[i][2], marker = 's',
+            #               c='g', s =70)
+
             # print(type(free_node_coor_list[i][0]))
         plt.show()
 

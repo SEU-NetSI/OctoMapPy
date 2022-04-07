@@ -47,10 +47,11 @@ class Inputter:
 
         # The definition of the logconfig
         lmap = LogConfig(name='Mapping', period_in_ms=100)
+        
         lmap.add_variable('stateEstimateZ.x')
         lmap.add_variable('stateEstimateZ.y')
         lmap.add_variable('stateEstimateZ.z')
-
+        
         # lmap.add_variable('range.front')
         # lmap.add_variable('range.back')
         lmap.add_variable('range.front')
@@ -74,27 +75,27 @@ class Inputter:
 
     def disconnected(self, URI):
         print('Disconnected')
-        print(self.start_point_list)
-        print(self.end_point_list)
+        print("start_point_list: ", self.start_point_list)
+        print("end_point_list: ", self.end_point_list)
 
     def mapping_data(self, timestamp, data, logconf):
         measurement = {
-            'x': data['stateEstimateZ.x'],
-            'y': data['stateEstimateZ.y'],
-            'z': data['stateEstimateZ.z'],
-
-            'roll': data['stabilizer.roll'],
-            'pitch': data['stabilizer.pitch'],
-            'yaw': data['stabilizer.yaw'],
-
-            'front': data['range.front'],
-            # 'back': data['range.back'],
-            # 'up': data['range.up'],
-            # 'down': data['range.zrange'],
-            # 'left': data['range.left'],
-            # 'right': data['range.right']
+            # cm
+            'x': data['stateEstimateZ.x'] / 10,
+            'y': data['stateEstimateZ.y'] / 10,
+            'z': data['stateEstimateZ.z'] / 10,
+            # ±90, ±90, ±180
+            'roll': round(data['stabilizer.roll'], 2),
+            'pitch': round(data['stabilizer.pitch'], 2),
+            'yaw': round(data['stabilizer.yaw'], 2),
+            # cm
+            'front': data['range.front'] / 10,
+            # 'back': data['range.back'] / 10,
+            # 'up': data['range.up'] / 10,
+            # 'down': data['range.zrange'] / 10,
+            # 'left': data['range.left'] / 10,
+            # 'right': data['range.right']  / 10
         }
-        print(measurement)
         self.get_end_point(measurement)
         # self.canvas.set_measurement(measurement)
 
@@ -132,39 +133,40 @@ class Inputter:
 
         tmp = np.subtract(point, origin)
         tmp2 = np.dot(rot, tmp)
-        return np.add(tmp2, origin)
+        res = np.around(np.add(tmp2, origin), decimals=1)
+        return tuple(res.tolist())
 
     def rotate_and_create_points(self, measurement, start_point):
-        data = []
+        end_points = []
         roll = measurement['roll']
         pitch = -measurement['pitch']
         yaw = measurement['yaw']
 
         # if (measurement['up'] < SENSOR_TH):
         #     up = [start_point[0], start_point[1], start_point[2] + measurement['up'] / 1000.0]
-        #     data.append(self.rot(roll, pitch, yaw, start_point, up))
+        #     end_points.append(self.rot(roll, pitch, yaw, start_point, up))
 
         # if (measurement['down'] < SENSOR_TH and PLOT_SENSOR_DOWN):
         #     down = [start_point[0], start_point[1], start_point[2] - measurement['down'] / 1000.0]
-        #     data.append(self.rot(roll, pitch, yaw, start_point, down))
+        #     end_points.append(self.rot(roll, pitch, yaw, start_point, down))
 
         # if (measurement['left'] < SENSOR_TH):
         #     left = [start_point[0], start_point[1] + measurement['left'] / 1000.0, start_point[2]]
-        #     data.append(self.rot(roll, pitch, yaw, start_point, left))
+        #     end_points.append(self.rot(roll, pitch, yaw, start_point, left))
 
         # if (measurement['right'] < SENSOR_TH):
         #     right = [start_point[0], start_point[1] - measurement['right'] / 1000.0, start_point[2]]
-        #     data.append(self.rot(roll, pitch, yaw, start_point, right))
+        #     end_points.append(self.rot(roll, pitch, yaw, start_point, right))
 
         if (measurement['front'] < SENSOR_TH):
-            front = [start_point[0] + measurement['front'] / 10, start_point[1], start_point[2]]
-            data.append(self.rot(roll, pitch, yaw, start_point, front))
+            front = [start_point[0] + measurement['front'], start_point[1], start_point[2]]
+            end_points.append(self.rot(roll, pitch, yaw, start_point, front))
 
         # if (measurement['back'] < SENSOR_TH):
         #     back = [start_point[0] - measurement['back'] / 1000.0, start_point[1], start_point[2]]
-        #     data.append(self.rot(roll, pitch, yaw, start_point, back))
+        #     end_points.append(self.rot(roll, pitch, yaw, start_point, back))
 
-        return data
+        return end_points
                      
     def get_end_point(self, measurement: dict):
         start_point = [
@@ -172,16 +174,16 @@ class Inputter:
             int(measurement['y']),
             int(measurement['z'])
         ]
-        data = self.rotate_and_create_points(measurement, start_point)
-        # data = (int(start_point[0] + measurement['front']/10), int(start_point[1]), int(start_point[2]))
-        self.end_point_list.append(data)
-        self.start_point_list.append(tuple(start_point))
-        print(data)
+        print("measurement: ", measurement)
+
+        end_points = self.rotate_and_create_points(measurement, start_point)
+        for end_point in end_points:
+            print("end_point: ", end_point)
+            self.end_point_list.append(end_point)
+            self.start_point_list.append(tuple(start_point))
 
         if len(self.end_point_list) == 100:
             self.cf.close_link()
-
-        return data
 
         # TODO: 1->6
         # for i in range(1):
