@@ -101,7 +101,9 @@ class OctoTree:
 
         startPoint = [int(startPoint[0]), int(startPoint[1]), int(startPoint[2])]
         endPoint = [int(endPoint[0]), int(endPoint[1]), int(endPoint[2])]
-        endpoint_origin = [int(endPoint[0] / TREE_RESOLUTION) * TREE_RESOLUTION, int(endPoint[1] / TREE_RESOLUTION) * TREE_RESOLUTION, int(endPoint[2] / TREE_RESOLUTION) * TREE_RESOLUTION]
+        endpoint_origin = [int(endPoint[0] / TREE_RESOLUTION) * TREE_RESOLUTION, 
+                            int(endPoint[1] / TREE_RESOLUTION) * TREE_RESOLUTION, 
+                            int(endPoint[2] / TREE_RESOLUTION) * TREE_RESOLUTION]
 
         steepXY = (np.abs(endPoint[1] - startPoint[1]) > np.abs(endPoint[0] - startPoint[0]))
         if steepXY:

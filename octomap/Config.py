@@ -1,4 +1,7 @@
 # STEP
+from matplotlib.text import OffsetFrom
+import math
+
 HIT_LOGODDS=0.85
 HIT_PROBABILITY=0.7
 MISS_LOGODDS=-0.4
@@ -12,10 +15,20 @@ FREE_PROBABILITY=0.12
 DEFAULT_PROBABILITY=0.5
 DEFAULT_LOGODDS=0
 # OCTOTREE
-TREE_CENTER=(50,50,10)
 TREE_RESOLUTION=4
 TREE_MAX_DEPTH=6
+
+# TREE_CENTER=(math.pow(2 , TREE_MAX_DEPTH) * TREE_RESOLUTION / 2,
+#             math.pow(2 , TREE_MAX_DEPTH) * TREE_RESOLUTION / 2,
+#             math.pow(2 , TREE_MAX_DEPTH) * TREE_RESOLUTION / 2)
+# TREE_CENTER=(0,0,0)
+TREE_CENTER=(50, 50 , 50)     # problem : The setting of the midpoint changes the output
+
 # Crazyflie
 URI='radio://0/80/2M/E7E7E7E7E7'
 SENSOR_TH=400
 PLOT_SENSOR_DOWN=False
+# Visualization
+Offset_x = (math.pow(2 , TREE_MAX_DEPTH) * TREE_RESOLUTION) / (2 *TREE_RESOLUTION)
+Offset_y = (math.pow(2 , TREE_MAX_DEPTH) * TREE_RESOLUTION) / (2 *TREE_RESOLUTION)
+Offset_z = (10 / TREE_RESOLUTION)

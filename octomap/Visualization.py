@@ -2,7 +2,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Config import OCCUPANY_LOGODDS, FREE_LOGODDS, TREE_MAX_DEPTH, TREE_RESOLUTION
+from Config import OCCUPANY_LOGODDS, FREE_LOGODDS, TREE_MAX_DEPTH, TREE_RESOLUTION, Offset_x, Offset_y, Offset_z
 from OctoNode import OctoNode
 
 
@@ -21,7 +21,7 @@ class Visualization:
         print("threshold_node_list: ", len(threshold_node_list))
 
         occu_node_list, free_node_list = self.get_classified_node_list(threshold_node_list)
-        print("occu_node_list: ", len(occu_node_list), "; free_node_list: ", len(free_node_list))
+        # print("occu_node_list: ", len(occu_node_list), "; free_node_list: ", len(free_node_list))
 
         occu_node_coor_list, free_node_coor_list = self.get_classified_node_coor_list(occu_node_list, free_node_list)
         print("occu_node_coor_list: ", len(occu_node_coor_list), "; free_node_coor_list: ", len(free_node_coor_list))
@@ -64,7 +64,7 @@ class Visualization:
         """
         threshold_node_list = []
         for node in leaf_node_list:
-            print(node.get_log_odds())
+            # print(node.get_log_odds())
             if node.get_log_odds() == OCCUPANY_LOGODDS or node.get_log_odds() == FREE_LOGODDS:
                 threshold_node_list.append(node)
         return threshold_node_list
@@ -94,10 +94,15 @@ class Visualization:
         free_node_coor_list = []
 
         for node in occu_node_list:
-            node_coor = (int(node.get_origin()[0] / TREE_RESOLUTION), int(node.get_origin()[1] / TREE_RESOLUTION), int(node.get_origin()[2] / TREE_RESOLUTION))
+            node_coor = (int(node.get_origin()[0] / TREE_RESOLUTION), 
+                        int(node.get_origin()[1] / TREE_RESOLUTION), 
+                        int(node.get_origin()[2] / TREE_RESOLUTION))
             occu_node_coor_list.append(node_coor)
+            # print(node.get_origin())
         for node in free_node_list:
-            node_coor = (int(node.get_origin()[0] / TREE_RESOLUTION), int(node.get_origin()[1] / TREE_RESOLUTION), int(node.get_origin()[2] / TREE_RESOLUTION))
+            node_coor = (int(node.get_origin()[0] / TREE_RESOLUTION), 
+                        int(node.get_origin()[1] / TREE_RESOLUTION), 
+                        int(node.get_origin()[2] / TREE_RESOLUTION))
             free_node_coor_list.append(node_coor)
 
         return occu_node_coor_list, free_node_coor_list
@@ -107,18 +112,21 @@ class Visualization:
         """
         Draw a 3D occupancy grid 
         """
-        indice_length = int(math.pow(2, TREE_MAX_DEPTH))
+        indice_length = int(math.pow(2, TREE_MAX_DEPTH))    
+        # x,y,z determined by the number of grids in that direction
         x, y, z = np.indices((indice_length, indice_length, indice_length))
 
         ax = plt.figure(figsize=(20,20)).add_subplot(projection='3d')
         # ax.set_xlim(-indice_length, indice_length)
         # ax.set_ylim(-indice_length, indice_length)
         # ax.set_zlim(-indice_length, indice_length)
-        # ax.set_xlabel('x')
-        # ax.set_ylabel('y')
-        # ax.set_zlabel('z')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('z')
         for i in range(len(occu_node_coor_list)):
-            occu_voxel = (x >= occu_node_coor_list[i][0] + 50) & (x < occu_node_coor_list[i][0] + 1 + 50) & (y >= occu_node_coor_list[i][1] + 50) & (y < occu_node_coor_list[i][1] + 1 + 50) & (z >= occu_node_coor_list[i][2] + 10) & (z < occu_node_coor_list[i][2] + 1 + 10)
+            occu_voxel = (x >= occu_node_coor_list[i][0] + Offset_x) & (x < occu_node_coor_list[i][0] + 1 + Offset_x) \
+                        & (y >= occu_node_coor_list[i][1] + Offset_y) & (y < occu_node_coor_list[i][1] + 1 + Offset_y) \
+                        & (z >= occu_node_coor_list[i][2] + Offset_z) & (z < occu_node_coor_list[i][2] + 1 + Offset_z)
             colors = np.empty(occu_voxel.shape, dtype=object)
             colors[occu_voxel] = 'red'
             ax.voxels(occu_voxel, facecolors=colors, edgecolor='k')
@@ -127,7 +135,9 @@ class Visualization:
             #              c='r', s=70)
 
         for i in range(len(free_node_coor_list)):
-            free_voxel = (x >= free_node_coor_list[i][0] + 50) & (x < free_node_coor_list[i][0] + 1 + 50) & (y >= free_node_coor_list[i][1] + 50) & (y < free_node_coor_list[i][1] + 1 + 50) & (z >= free_node_coor_list[i][2] + 10) & (z < free_node_coor_list[i][2] + 1 + 10)
+            free_voxel = (x >= free_node_coor_list[i][0] + Offset_x) & (x < free_node_coor_list[i][0] + 1 + Offset_x) \
+                        & (y >= free_node_coor_list[i][1] + Offset_y) & (y < free_node_coor_list[i][1] + 1 + Offset_y) \
+                        & (z >= free_node_coor_list[i][2] + Offset_z) & (z < free_node_coor_list[i][2] + 1 + Offset_z)
             colors = np.empty(free_voxel.shape, dtype=object)
             colors[free_voxel] = 'green'
             ax.voxels(free_voxel, facecolors=colors, edgecolor='k')
