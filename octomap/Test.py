@@ -1,8 +1,12 @@
 
 from OctoTree import OctoTree
 from Config import TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH
-from Inputter import Inputter
+from OctoMap import OctoMap
 import pandas as pd
+
+# TODO
+def unit_test():
+    pass
 
 def display_tree():
     # test_point_list = [(110,110,110),(30,30,30),(110,110,110),(30,30,30),(110,110,110),(30,30,30),(110,110,110),(30,30,30),(110,110,110),(30,30,30),(110,110,110),(30,30,30)]
@@ -44,7 +48,7 @@ def display_tree():
     
 
 def test_log():
-    input = Inputter()
+    OctoMap()
     display_tree()
     
 

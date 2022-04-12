@@ -4,10 +4,9 @@ import numpy as np
 import xlwt
 
 
-from Config import FREE_LOGODDS, HIT_LOGODDS, OCCUPANY_LOGODDS, TREE_RESOLUTION, MISS_LOGODDS
+from Config import FREE_LOGODDS, HIT_LOGODDS, OCCUPANY_LOGODDS, TREE_RESOLUTION, MISS_LOGODDS, LOGGER
 from OctoNode import OctoNode
 from Visualization import Visualization
-from Main import logger
 
 
 class OctoTree:
@@ -190,14 +189,15 @@ class OctoTree:
     def export_known_node(self):
         # self._visualizer.visualize(self._root)
         leaf_node_list: list = self.get_leaf_node_list()
-        logger.warning("leaf_node_list: ", len(leaf_node_list))
+        LOGGER.info("leaf_node_list: {}".format(len(leaf_node_list)))
         threshold_node_list: list = self.get_threshold_node_list(leaf_node_list)
-        logger.warning("threshold_node_list: ", len(threshold_node_list))
+        LOGGER.info("threshold_node_list: {}".format(len(threshold_node_list)))
         occu_node_list, free_node_list = self.get_classified_node_list(threshold_node_list)
         occu_node_coor_list, free_node_coor_list = self.get_classified_node_coor_list(occu_node_list, free_node_list)
-        logger.warning("occu_node_coor_list: ", len(occu_node_coor_list), "; free_node_coor_list: ", len(free_node_coor_list))
-        logger.warning(occu_node_coor_list)
-        logger.warning(free_node_coor_list)
+        LOGGER.info("length of occu_node_coor_list: {}".format(len(occu_node_coor_list)))
+        # LOGGER.info("occu_node_coor_list: {}".format(str(occu_node_coor_list)))
+        LOGGER.info("length of free_node_coor_list: {}".format(len(free_node_coor_list)))
+        # LOGGER.info("free_node_coor_list: {}",format(str(free_node_coor_list)))
 
         # Output points to xls file
         workbook = xlwt.Workbook(encoding='utf-8')
@@ -206,12 +206,12 @@ class OctoTree:
         sheet_occu_node.write(0, 0, label = 'x')
         sheet_occu_node.write(0, 1, label = 'y')
         sheet_occu_node.write(0, 2, label = 'z')
-        sheet_occu_node.write(0, 3, label = time.time())
+        sheet_occu_node.write(0, 3, label = time())
 
         sheet_free_node.write(0, 0, label = 'x')
         sheet_free_node.write(0, 1, label = 'y')
         sheet_free_node.write(0, 2, label = 'z')
-        sheet_free_node.write(0, 3, label = time.time())
+        sheet_free_node.write(0, 3, label = time())
         for i in range(len(occu_node_coor_list)):
             sheet_occu_node.write(i + 1, 0, occu_node_coor_list[i][0])
             sheet_occu_node.write(i + 1, 1, occu_node_coor_list[i][1])
@@ -227,11 +227,11 @@ class OctoTree:
         """
         Return leaf nodes for tree traversal
         """
-        if not self.root:
+        if not self._root:
             return []
 
         leaf_nodes = []
-        queue = [self.root]
+        queue = [self._root]
         while queue:
             """
             Store the list of child nodes of the current layer

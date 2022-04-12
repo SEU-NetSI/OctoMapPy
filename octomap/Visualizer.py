@@ -7,7 +7,7 @@ from Config import OCCUPANY_LOGODDS, FREE_LOGODDS, TREE_MAX_DEPTH, TREE_RESOLUTI
 from OctoNode import OctoNode
 
 
-class Visualization:
+class Visualizer:
     def __init__(self) -> None:
         pass
 
@@ -72,5 +72,9 @@ class Visualization:
         # plt.savefig('./map.jpg', dpi=1200)
 
 
+def main():
+    visualizer = Visualizer()
+    # TODO: while loop
+
 if __name__ == "__main__":
-    Visualization().test()
+    main()

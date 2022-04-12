@@ -1,12 +1,11 @@
-import logging
-from Inputter import Inputter
+from OctoMap import OctoMap
+from RandomSearch import RandomSearch
 
-# Only output errors from the logging framework
-logging.basicConfig(level=logging.WARN)
-logger = logging.getLogger()
 
 def main():
-    input = Inputter()
+    octomap = OctoMap()
+    octomap.mapping()
+    # point_list = RandomSearch().plan(octomap.get_octotree())
 
 if __name__=="__main__":
     main()

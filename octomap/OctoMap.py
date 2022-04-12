@@ -6,18 +6,16 @@ from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
 import numpy as np
 
-from Config import PLOT_SENSOR_DOWN, SENSOR_TH, URI
+from Config import PLOT_SENSOR_DOWN, SENSOR_TH, URI, LOGGER
 from Config import TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION
 from OctoTree import OctoTree
-from Main import logger
 
 
 
-class Inputter:
+class OctoMap:
     def __init__(self):
         self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
         self.counter = 0
-        self.main()
 
     def mapping(self):
         # Initialize the low-level drivers
@@ -28,7 +26,7 @@ class Inputter:
         try:
             self.cf.connected.add_callback(self.connected)
         except:
-            logger.warning("Connect failed.")
+            LOGGER.info("Connect failed.")
         self.cf.disconnected.add_callback(self.disconnected)
 
         # Connect to the Crazyflie
@@ -36,7 +34,7 @@ class Inputter:
 
     
     def connected(self, URI):
-        logger.warning('We are now connected to {}'.format(URI))
+        LOGGER.info('We are now connected to {}'.format(URI))
 
         # The definition of the logconfig
         lmap = LogConfig(name='Mapping', period_in_ms=100)
@@ -61,14 +59,16 @@ class Inputter:
             lmap.data_received_cb.add_callback(self.mapping_data)
             lmap.start()
         except KeyError as e:
-            logger.warning('Could not start log configuration,'
+            LOGGER.info('Could not start log configuration,'
                   '{} not found in TOC'.format(str(e)))
         except AttributeError:
-            logger.warning('Could not add Measurement log config, bad configuration.')
+            LOGGER.info('Could not add Measurement log config, bad configuration.')
 
     def disconnected(self, URI):
-        logger.warning('Disconnected')
+        LOGGER.info('Disconnected')
 
+    def get_octotree(self):
+        return self.octotree
 
     def mapping_data(self, timestamp, data, logconf):
         measurement = {
