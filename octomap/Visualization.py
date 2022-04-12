@@ -1,6 +1,7 @@
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 from Config import OCCUPANY_LOGODDS, FREE_LOGODDS, TREE_MAX_DEPTH, TREE_RESOLUTION, Offset_x, Offset_y, Offset_z
 from OctoNode import OctoNode
@@ -20,6 +21,11 @@ class Visualization:
     def import_known_node():
         occu_node_coor_list = [], free_node_coor_list = []
         # TODO: read csv
+        filename="point_list.xls"
+        occu_nodes=pd.read_excel(filename,sheet_name="occu_node_coor_list",usecols=(0,1,2),skiprows=0)
+        occu_node_coor_list = list(map(tuple,occu_nodes.values))
+        free_nodes=pd.read_excel(filename,sheet_name="free_node_coor_list",usecols=(0,1,2),skiprows=0)
+        free_node_coor_list= list(map(tuple,free_nodes.values))
         return occu_node_coor_list, free_node_coor_list
 
 

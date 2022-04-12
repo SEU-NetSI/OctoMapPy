@@ -1,8 +1,10 @@
+from datetime import time
 import math
 import numpy as np
 import xlwt
 
-from Config import HIT_LOGODDS, TREE_RESOLUTION, MISS_LOGODDS
+
+from Config import FREE_LOGODDS, HIT_LOGODDS, OCCUPANY_LOGODDS, TREE_RESOLUTION, MISS_LOGODDS
 from OctoNode import OctoNode
 from Visualization import Visualization
 from Main import logger
@@ -199,23 +201,26 @@ class OctoTree:
 
         # Output points to xls file
         workbook = xlwt.Workbook(encoding='utf-8')
-        sheet_start = workbook.add_sheet('start_point_list')
-        sheet_end = workbook.add_sheet('end_point_list')
-        sheet_start.write(0,0,label = 'x')
-        sheet_start.write(0,1,label = 'y')
-        sheet_start.write(0,2,label = 'z')
-        sheet_end.write(0,0,label = 'x')
-        sheet_end.write(0,1,label = 'y')
-        sheet_end.write(0,2,label = 'z')
-        for i in range(len(self.start_point_list)):
-            sheet_start.write(i+1,0,self.start_point_list[i][0])
-            sheet_start.write(i+1,1,self.start_point_list[i][1])
-            sheet_start.write(i+1,2,self.start_point_list[i][2])
-        for i in range(len(self.end_point_list)):
-            sheet_end.write(i + 1, 0, self.end_point_list[i][0])
-            sheet_end.write(i + 1, 1, self.end_point_list[i][1])
-            sheet_end.write(i + 1, 2, self.end_point_list[i][2])
-        workbook.save("/home/bitcraze/Desktop/projects/my project/octomap/point_list.xls")
+        sheet_occu_node = workbook.add_sheet('occu_node_coor_list')
+        sheet_free_node = workbook.add_sheet('free_node_coor_list')
+        sheet_occu_node.write(0, 0, label = 'x')
+        sheet_occu_node.write(0, 1, label = 'y')
+        sheet_occu_node.write(0, 2, label = 'z')
+        sheet_occu_node.write(0, 3, label = time.time())
+
+        sheet_free_node.write(0, 0, label = 'x')
+        sheet_free_node.write(0, 1, label = 'y')
+        sheet_free_node.write(0, 2, label = 'z')
+        sheet_free_node.write(0, 3, label = time.time())
+        for i in range(len(occu_node_coor_list)):
+            sheet_occu_node.write(i + 1, 0, occu_node_coor_list[i][0])
+            sheet_occu_node.write(i + 1, 1, occu_node_coor_list[i][1])
+            sheet_occu_node.write(i + 1, 2, occu_node_coor_list[i][2])
+        for i in range(len(free_node_coor_list)):
+            sheet_free_node.write(i + 1, 0, free_node_coor_list[i][0])
+            sheet_free_node.write(i + 1, 1, free_node_coor_list[i][1])
+            sheet_free_node.write(i + 1, 2, free_node_coor_list[i][2])
+        workbook.save("./point_list.xls")
 
 
     def get_leaf_node_list(self):
