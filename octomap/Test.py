@@ -40,7 +40,7 @@ def display_tree():
     myTree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
     for index in range(len(end_point_list)):
         myTree.ray_casting(start_point_list[index], end_point_list[index])
-    myTree.visualize()    
+    myTree.visualize()
     
 
 def test_log():

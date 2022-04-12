@@ -64,7 +64,6 @@ class OctoNode:
             the index of the child --- int
         """
         if not self.contains(point, origin, width):
-            print(point, origin, width)
             raise ValueError('Point is not contained in node.')
 
         return (1 if point[0] >= origin[0] + width / 2 else 0) + \

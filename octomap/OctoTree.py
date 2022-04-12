@@ -1,9 +1,11 @@
 import math
 import numpy as np
+import xlwt
 
 from Config import HIT_LOGODDS, TREE_RESOLUTION, MISS_LOGODDS
 from OctoNode import OctoNode
 from Visualization import Visualization
+from Main import logger
 
 
 class OctoTree:
@@ -136,9 +138,7 @@ class OctoTree:
                 point[0], point[2] = point[2], point[0]
             if steepXY:
                 point[0], point[1] = point[1], point[0]
-            """
-            print (point)
-            """
+                
             errorXY -= delta[1]
             errorXZ -= delta[2]
             if errorXY < 0:
@@ -185,5 +185,110 @@ class OctoTree:
 
         return probability
         
-    def visualize(self):
-        self._visualizer.visualize(self._root)
+    def export_known_node(self):
+        # self._visualizer.visualize(self._root)
+        leaf_node_list: list = self.get_leaf_node_list()
+        logger.warning("leaf_node_list: ", len(leaf_node_list))
+        threshold_node_list: list = self.get_threshold_node_list(leaf_node_list)
+        logger.warning("threshold_node_list: ", len(threshold_node_list))
+        occu_node_list, free_node_list = self.get_classified_node_list(threshold_node_list)
+        occu_node_coor_list, free_node_coor_list = self.get_classified_node_coor_list(occu_node_list, free_node_list)
+        logger.warning("occu_node_coor_list: ", len(occu_node_coor_list), "; free_node_coor_list: ", len(free_node_coor_list))
+        logger.warning(occu_node_coor_list)
+        logger.warning(free_node_coor_list)
+
+        # Output points to xls file
+        workbook = xlwt.Workbook(encoding='utf-8')
+        sheet_start = workbook.add_sheet('start_point_list')
+        sheet_end = workbook.add_sheet('end_point_list')
+        sheet_start.write(0,0,label = 'x')
+        sheet_start.write(0,1,label = 'y')
+        sheet_start.write(0,2,label = 'z')
+        sheet_end.write(0,0,label = 'x')
+        sheet_end.write(0,1,label = 'y')
+        sheet_end.write(0,2,label = 'z')
+        for i in range(len(self.start_point_list)):
+            sheet_start.write(i+1,0,self.start_point_list[i][0])
+            sheet_start.write(i+1,1,self.start_point_list[i][1])
+            sheet_start.write(i+1,2,self.start_point_list[i][2])
+        for i in range(len(self.end_point_list)):
+            sheet_end.write(i + 1, 0, self.end_point_list[i][0])
+            sheet_end.write(i + 1, 1, self.end_point_list[i][1])
+            sheet_end.write(i + 1, 2, self.end_point_list[i][2])
+        workbook.save("/home/bitcraze/Desktop/projects/my project/octomap/point_list.xls")
+
+
+    def get_leaf_node_list(self):
+        """
+        Return leaf nodes for tree traversal
+        """
+        if not self.root:
+            return []
+
+        leaf_nodes = []
+        queue = [self.root]
+        while queue:
+            """
+            Store the list of child nodes of the current layer
+            """
+            childNodes = []
+            for node in queue:
+                if node.is_leaf():
+                    leaf_nodes.append(node)
+                if node.has_children():
+                    childNodes.extend(node.get_children())
+            """
+            Update the queue to the node of the next layer and continue to traverse 
+            """
+            queue = childNodes
+
+        
+        return leaf_nodes
+
+    @staticmethod
+    def get_threshold_node_list(leaf_node_list):
+        """
+        Store leaf nodes with deterministic probability
+        """
+        threshold_node_list = []
+        for node in leaf_node_list:
+            if node.get_log_odds() == OCCUPANY_LOGODDS or node.get_log_odds() == FREE_LOGODDS:
+                threshold_node_list.append(node)
+        return threshold_node_list
+    
+    @staticmethod
+    def get_classified_node_list(threshold_node_list):
+        """
+        Separate occupied and free points 
+        """
+        occu_node_list: list = []
+        free_node_list: list = []
+
+        for node in threshold_node_list:
+            if node.get_log_odds() == OCCUPANY_LOGODDS:
+                occu_node_list.append(node)
+            if node.get_log_odds() == FREE_LOGODDS:
+                free_node_list.append(node)
+        
+        return occu_node_list, free_node_list
+
+    @staticmethod
+    def get_classified_node_coor_list(occu_node_list, free_node_list):
+        """
+        Use list to store the corresponding coordinates 
+        """        
+        occu_node_coor_list = []
+        free_node_coor_list = []
+
+        for node in occu_node_list:
+            node_coor = (int(node.get_origin()[0] / TREE_RESOLUTION), 
+                        int(node.get_origin()[1] / TREE_RESOLUTION), 
+                        int(node.get_origin()[2] / TREE_RESOLUTION))
+            occu_node_coor_list.append(node_coor)
+        for node in free_node_list:
+            node_coor = (int(node.get_origin()[0] / TREE_RESOLUTION), 
+                        int(node.get_origin()[1] / TREE_RESOLUTION), 
+                        int(node.get_origin()[2] / TREE_RESOLUTION))
+            free_node_coor_list.append(node_coor)
+
+        return occu_node_coor_list, free_node_coor_list

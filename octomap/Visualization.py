@@ -14,110 +14,15 @@ class Visualization:
         """
         Visualize the occupied/free points
         """
-        leaf_node_list: list = self.get_leaf_node_list(root)
-        print("leaf_node_list: ", len(leaf_node_list))
-
-        threshold_node_list: list = self.get_threshold_node_list(leaf_node_list)
-        print("threshold_node_list: ", len(threshold_node_list))
-
-        occu_node_list, free_node_list = self.get_classified_node_list(threshold_node_list)
-        # print("occu_node_list: ", len(occu_node_list), "; free_node_list: ", len(free_node_list))
-
-        occu_node_coor_list, free_node_coor_list = self.get_classified_node_coor_list(occu_node_list, free_node_list)
-        print("occu_node_coor_list: ", len(occu_node_coor_list), "; free_node_coor_list: ", len(free_node_coor_list))
-        print(occu_node_coor_list)
-        print(free_node_coor_list)
-
-        # fw_occu = open("D:/github/myproject/octomap/occu_node_coor_list.txt", 'w') # parameter: filename  mode               
-        # for line in occu_node_coor_list:
-        #     fw_occu.write(str(line)+'\n')
-        # # fw.write(str(occu_node_coor_list)) 
-        # fw_occu.close()
-        # fw_free = open("D:/github/myproject/octomap/free_node_coor_list.txt", 'w') # parameter: filename  mode               
-        # for line in free_node_coor_list:
-        #     fw_free.write(str(line)+'\n')
-        # # fw.write(str(free_node_coor_list)) 
-        # fw_free.close()
-        
+        occu_node_coor_list, free_node_coor_list = self.import_known_node()
         self.show(occu_node_coor_list, free_node_coor_list)
 
-    def get_leaf_node_list(self, root: OctoNode):
-        """
-        Return leaf nodes for tree traversal
-        """
-        if not root:
-            return []
-
-        leaf_nodes = []
-        queue = [root]
-        while queue:
-            """
-            Store the list of child nodes of the current layer
-            """
-            childNodes = []
-            for node in queue:
-                if node.is_leaf():
-                    leaf_nodes.append(node)
-                if node.has_children():
-                    childNodes.extend(node.get_children())
-            """
-            Update the queue to the node of the next layer and continue to traverse 
-            """
-            queue = childNodes
-
-        
-        return leaf_nodes
-
-    @staticmethod
-    def get_threshold_node_list(leaf_node_list):
-        """
-        Store leaf nodes with deterministic probability
-        """
-        threshold_node_list = []
-        for node in leaf_node_list:
-            # print(node.get_log_odds())
-            if node.get_log_odds() == OCCUPANY_LOGODDS or node.get_log_odds() == FREE_LOGODDS:
-                threshold_node_list.append(node)
-        return threshold_node_list
-    
-    @staticmethod
-    def get_classified_node_list(threshold_node_list):
-        """
-        Separate occupied and free points 
-        """
-        occu_node_list: list = []
-        free_node_list: list = []
-
-        for node in threshold_node_list:
-            if node.get_log_odds() == OCCUPANY_LOGODDS:
-                occu_node_list.append(node)
-            if node.get_log_odds() == FREE_LOGODDS:
-                free_node_list.append(node)
-        
-        return occu_node_list, free_node_list
-
-    @staticmethod
-    def get_classified_node_coor_list(occu_node_list, free_node_list):
-        """
-        Use list to store the corresponding coordinates 
-        """        
-        occu_node_coor_list = []
-        free_node_coor_list = []
-
-        for node in occu_node_list:
-            node_coor = (int(node.get_origin()[0] / TREE_RESOLUTION), 
-                        int(node.get_origin()[1] / TREE_RESOLUTION), 
-                        int(node.get_origin()[2] / TREE_RESOLUTION))
-            occu_node_coor_list.append(node_coor)
-            # print(node.get_origin())
-        for node in free_node_list:
-            node_coor = (int(node.get_origin()[0] / TREE_RESOLUTION), 
-                        int(node.get_origin()[1] / TREE_RESOLUTION), 
-                        int(node.get_origin()[2] / TREE_RESOLUTION))
-            free_node_coor_list.append(node_coor)
-
+    def import_known_node():
+        occu_node_coor_list = [], free_node_coor_list = []
+        # TODO: read csv
         return occu_node_coor_list, free_node_coor_list
-    
+
+
     @staticmethod
     def show(occu_node_coor_list, free_node_coor_list):
         """
@@ -156,7 +61,6 @@ class Visualization:
             #  ax.scatter3D(free_node_coor_list[i][0], free_node_coor_list[i][1], free_node_coor_list[i][2], marker = 's',
             #               c='g', s =70)
 
-            # print(type(free_node_coor_list[i][0]))
 
         plt.show()
         # plt.savefig('./map.jpg', dpi=1200)

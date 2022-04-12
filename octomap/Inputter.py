@@ -1,7 +1,4 @@
-import logging
 import math
-import xlwt
-import pandas as pd
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
@@ -12,17 +9,17 @@ import numpy as np
 from Config import PLOT_SENSOR_DOWN, SENSOR_TH, URI
 from Config import TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION
 from OctoTree import OctoTree
+from Main import logger
 
-# Only output errors from the logging framework
-logging.basicConfig(level=logging.ERROR)
+
 
 class Inputter:
     def __init__(self):
-        self.start_point_list = []
-        self.end_point_list = []
+        self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
+        self.counter = 0
         self.main()
 
-    def main(self):
+    def mapping(self):
         # Initialize the low-level drivers
         cflib.crtp.init_drivers()
         self.cf = Crazyflie(ro_cache=None, rw_cache='cache')
@@ -31,21 +28,15 @@ class Inputter:
         try:
             self.cf.connected.add_callback(self.connected)
         except:
-            print ("Connect failed.")
+            logger.warning("Connect failed.")
         self.cf.disconnected.add_callback(self.disconnected)
 
         # Connect to the Crazyflie
         self.cf.open_link(URI)
-        
-    
-    def after(self):
-        myTree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
-        for index in range(len(self.end_point_list)):
-            myTree.ray_casting(self.start_point_list[index], self.end_point_list[index])
-        myTree.visualize()
+
     
     def connected(self, URI):
-        print('We are now connected to {}'.format(URI))
+        logger.warning('We are now connected to {}'.format(URI))
 
         # The definition of the logconfig
         lmap = LogConfig(name='Mapping', period_in_ms=100)
@@ -70,29 +61,14 @@ class Inputter:
             lmap.data_received_cb.add_callback(self.mapping_data)
             lmap.start()
         except KeyError as e:
-            print('Could not start log configuration,'
+            logger.warning('Could not start log configuration,'
                   '{} not found in TOC'.format(str(e)))
         except AttributeError:
-            print('Could not add Measurement log config, bad configuration.')
+            logger.warning('Could not add Measurement log config, bad configuration.')
 
     def disconnected(self, URI):
-        print('Disconnected')
-        print("start_point_list: ", self.start_point_list)
-        print("end_point_list: ", self.end_point_list)
+        logger.warning('Disconnected')
 
-       
-
-
-        # fw_start = open("D:/github/myproject/octomap/start_point_list.txt", 'w') # parameter: filename  mode               
-        # for line in self.start_point_list:
-        #     fw_start.write(str(line)+'\n')
-        # # fw.write(str(self.start_point_list)) 
-        # fw_start.close()
-        # fw_end = open("D:/github/myproject/octomap/end_point_list.txt", 'w') # parameter: filename  mode               
-        # for line in  self.end_point_list:
-        #     fw_end.write(str(line)+'\n')
-        # # fw.write(str( self.end_point_list)) 
-        # fw_end.close()
 
     def mapping_data(self, timestamp, data, logconf):
         measurement = {
@@ -112,8 +88,20 @@ class Inputter:
             # 'left': data['range.left'] / 10,
             # 'right': data['range.right']  / 10
         }
-        self.get_end_point(measurement)
-        # self.canvas.set_measurement(measurement)
+        start_point = [
+            int(measurement['x']),
+            int(measurement['y']),
+            int(measurement['z'])
+        ]        
+        end_points = self.get_end_point(start_point, measurement)
+        for end_point in end_points:
+            self.octotree.ray_casting(tuple(start_point), tuple(end_point))
+
+        # export nodes each 100 times ranging
+        self.counter += 1
+        # TODO: new a thread to export
+        if self.counter % 100 == 0:
+            self.octotree.export_known_node()
 
     def rot(self, roll, pitch, yaw, origin, point):
         """
@@ -184,45 +172,6 @@ class Inputter:
 
         return end_points
                      
-    def get_end_point(self, measurement: dict):
-        start_point = [
-            int(measurement['x']),
-            int(measurement['y']),
-            int(measurement['z'])
-        ]
-        print("measurement: ", measurement)
-
+    def get_end_point(self, start_point: list, measurement: dict):
         end_points = self.rotate_and_create_points(measurement, start_point)
-        for end_point in end_points:
-            print("end_point: ", end_point)
-            self.end_point_list.append(end_point)
-            self.start_point_list.append(tuple(start_point))
-
-        if len(self.end_point_list) == 100:
-             # Output points to xls file
-            workbook = xlwt.Workbook(encoding='utf-8')
-            sheet_start = workbook.add_sheet('start_point_list')
-            sheet_end = workbook.add_sheet('end_point_list')
-            sheet_start.write(0,0,label = 'x')
-            sheet_start.write(0,1,label = 'y')
-            sheet_start.write(0,2,label = 'z')
-            sheet_end.write(0,0,label = 'x')
-            sheet_end.write(0,1,label = 'y')
-            sheet_end.write(0,2,label = 'z')
-            for i in range(len(self.start_point_list)):
-                sheet_start.write(i+1,0,self.start_point_list[i][0])
-                sheet_start.write(i+1,1,self.start_point_list[i][1])
-                sheet_start.write(i+1,2,self.start_point_list[i][2])
-            for i in range(len(self.end_point_list)):
-                sheet_end.write(i + 1, 0, self.end_point_list[i][0])
-                sheet_end.write(i + 1, 1, self.end_point_list[i][1])
-                sheet_end.write(i + 1, 2, self.end_point_list[i][2])
-            workbook.save("/home/bitcraze/Desktop/projects/my project/octomap/point_list.xls")
-            self.cf.close_link()
-
-        # TODO: 1->6
-        # for i in range(1):
-        #     if (i < len(data)):
-        #         self.lines[i].set_data(np.array([start_point, data[i]]))
-        #     else:
-        #         self.lines[i].set_data(np.array([start_point, start_point]))        
+        return end_points
