@@ -6,7 +6,6 @@ import xlwt
 
 from Config import FREE_LOGODDS, HIT_LOGODDS, OCCUPANY_LOGODDS, TREE_RESOLUTION, MISS_LOGODDS, LOGGER
 from OctoNode import OctoNode
-from Visualization import Visualization
 
 
 class OctoTree:
@@ -33,7 +32,6 @@ class OctoTree:
         self._max_depth = max_depth
 
         self._root = OctoNode()
-        self._visualizer = Visualization()
 
     @property
     def radius(self):
@@ -187,7 +185,6 @@ class OctoTree:
         return probability
         
     def export_known_node(self):
-        # self._visualizer.visualize(self._root)
         leaf_node_list: list = self.get_leaf_node_list()
         LOGGER.info("leaf_node_list: {}".format(len(leaf_node_list)))
         threshold_node_list: list = self.get_threshold_node_list(leaf_node_list)
