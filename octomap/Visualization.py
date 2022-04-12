@@ -28,6 +28,17 @@ class Visualization:
         print(occu_node_coor_list)
         print(free_node_coor_list)
 
+        # fw_occu = open("D:/github/myproject/octomap/occu_node_coor_list.txt", 'w') # parameter: filename  mode               
+        # for line in occu_node_coor_list:
+        #     fw_occu.write(str(line)+'\n')
+        # # fw.write(str(occu_node_coor_list)) 
+        # fw_occu.close()
+        # fw_free = open("D:/github/myproject/octomap/free_node_coor_list.txt", 'w') # parameter: filename  mode               
+        # for line in free_node_coor_list:
+        #     fw_free.write(str(line)+'\n')
+        # # fw.write(str(free_node_coor_list)) 
+        # fw_free.close()
+        
         self.show(occu_node_coor_list, free_node_coor_list)
 
     def get_leaf_node_list(self, root: OctoNode):
@@ -146,7 +157,8 @@ class Visualization:
             #               c='g', s =70)
 
             # print(type(free_node_coor_list[i][0]))
-        plt.show()
+
+        # plt.show()
         # plt.savefig('./map.jpg', dpi=1200)
 
 

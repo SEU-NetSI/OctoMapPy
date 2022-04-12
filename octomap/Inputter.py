@@ -1,5 +1,7 @@
 import logging
 import math
+import xlwt
+import pandas as pd
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
@@ -77,6 +79,38 @@ class Inputter:
         print('Disconnected')
         print("start_point_list: ", self.start_point_list)
         print("end_point_list: ", self.end_point_list)
+
+        # Output points to xls file
+        workbook = xlwt.Workbook(encoding='utf-8')
+        sheet_start = workbook.add_sheet('start_point_list')
+        sheet_end = workbook.add_sheet('end_point_list')
+        sheet_start.write(0,0,label = 'x')
+        sheet_start.write(0,1,label = 'y')
+        sheet_start.write(0,2,label = 'z')
+        sheet_end.write(0,0,label = 'x')
+        sheet_end.write(0,1,label = 'y')
+        sheet_end.write(0,2,label = 'z')
+        for i in range(len(self.start_point_list)):
+            sheet_start.write(i+1,0,self.start_point_list[i][0])
+            sheet_start.write(i+1,1,self.start_point_list[i][1])
+            sheet_start.write(i+1,2,self.start_point_list[i][2])
+        for i in range(len(self.end_point_list)):
+            sheet_end.write(i + 1, 0, self.end_point_list[i][0])
+            sheet_end.write(i + 1, 1, self.end_point_list[i][1])
+            sheet_end.write(i + 1, 2, self.end_point_list[i][2])
+        workbook.save("D:/github/myproject/octomap/point_list.xls")
+
+
+        # fw_start = open("D:/github/myproject/octomap/start_point_list.txt", 'w') # parameter: filename  mode               
+        # for line in self.start_point_list:
+        #     fw_start.write(str(line)+'\n')
+        # # fw.write(str(self.start_point_list)) 
+        # fw_start.close()
+        # fw_end = open("D:/github/myproject/octomap/end_point_list.txt", 'w') # parameter: filename  mode               
+        # for line in  self.end_point_list:
+        #     fw_end.write(str(line)+'\n')
+        # # fw.write(str( self.end_point_list)) 
+        # fw_end.close()
 
     def mapping_data(self, timestamp, data, logconf):
         measurement = {
