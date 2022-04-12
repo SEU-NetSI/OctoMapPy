@@ -3,7 +3,7 @@ import math
 import numpy as np
 import xlwt
 
-
+from datetime import datetime
 from Config import FREE_LOGODDS, HIT_LOGODDS, OCCUPANY_LOGODDS, TREE_RESOLUTION, MISS_LOGODDS, LOGGER
 from OctoNode import OctoNode
 
@@ -200,15 +200,17 @@ class OctoTree:
         workbook = xlwt.Workbook(encoding='utf-8')
         sheet_occu_node = workbook.add_sheet('occu_node_coor_list')
         sheet_free_node = workbook.add_sheet('free_node_coor_list')
+        value = datetime.today()
+        date_value = datetime.strftime(value,'%H:%M:%S')
         sheet_occu_node.write(0, 0, label = 'x')
         sheet_occu_node.write(0, 1, label = 'y')
         sheet_occu_node.write(0, 2, label = 'z')
-        sheet_occu_node.write(0, 3, label = time())
+        sheet_occu_node.write(0, 3, label = date_value)
 
         sheet_free_node.write(0, 0, label = 'x')
         sheet_free_node.write(0, 1, label = 'y')
         sheet_free_node.write(0, 2, label = 'z')
-        sheet_free_node.write(0, 3, label = time())
+        sheet_free_node.write(0, 3, label = date_value)
         for i in range(len(occu_node_coor_list)):
             sheet_occu_node.write(i + 1, 0, occu_node_coor_list[i][0])
             sheet_occu_node.write(i + 1, 1, occu_node_coor_list[i][1])

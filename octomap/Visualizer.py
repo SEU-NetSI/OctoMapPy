@@ -1,7 +1,9 @@
+from datetime import time
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import os
 
 from Config import OCCUPANY_LOGODDS, FREE_LOGODDS, TREE_MAX_DEPTH, TREE_RESOLUTION, Offset_x, Offset_y, Offset_z
 from OctoNode import OctoNode
@@ -11,20 +13,22 @@ class Visualizer:
     def __init__(self) -> None:
         pass
 
-    def visualize(self, root: OctoNode):
+    def visualize(self):
         """
         Visualize the occupied/free points
         """
         occu_node_coor_list, free_node_coor_list = self.import_known_node()
         self.show(occu_node_coor_list, free_node_coor_list)
 
-    def import_known_node():
-        occu_node_coor_list = [], free_node_coor_list = []
+    def import_known_node(self):
+        occu_node_coor_list = []
+        free_node_coor_list = []
         # TODO: read csv
-        filename="point_list.xls"
-        occu_nodes=pd.read_excel(filename,sheet_name="occu_node_coor_list",usecols=(0,1,2),skiprows=0)
+        
+        filename="\\octomap\\point_list.xls"
+        occu_nodes=pd.read_excel(os.getcwd()+filename,sheet_name="occu_node_coor_list",usecols=(0,1,2),skiprows=0)
         occu_node_coor_list = list(map(tuple,occu_nodes.values))
-        free_nodes=pd.read_excel(filename,sheet_name="free_node_coor_list",usecols=(0,1,2),skiprows=0)
+        free_nodes=pd.read_excel(os.getcwd()+filename,sheet_name="free_node_coor_list",usecols=(0,1,2),skiprows=0)
         free_node_coor_list= list(map(tuple,free_nodes.values))
         return occu_node_coor_list, free_node_coor_list
 
@@ -75,6 +79,10 @@ class Visualizer:
 def main():
     visualizer = Visualizer()
     # TODO: while loop
+    while True:
+        visualizer.visualize()
+        time.sleep(5)
+
 
 if __name__ == "__main__":
     main()
