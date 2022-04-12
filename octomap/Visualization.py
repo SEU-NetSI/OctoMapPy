@@ -158,7 +158,7 @@ class Visualization:
 
             # print(type(free_node_coor_list[i][0]))
 
-        # plt.show()
+        plt.show()
         # plt.savefig('./map.jpg', dpi=1200)
 
 

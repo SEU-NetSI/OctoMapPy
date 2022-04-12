@@ -33,12 +33,10 @@ def display_tree():
     
     # read data from xls file
     filename="point_list.xls"
-    Start_List=pd.read_excel(filename,sheet_name="sheet_start",usecols=(0,1,2),skiprows=0)
-    start_point_list= list(map(tuple,Start_List))
-    End_List=pd.read_excel(filename,sheet_name="sheet_end",usecols=(0,1,2),skiprows=0)
-    end_point_list= list(map(tuple,End_List))
-
-    
+    Start_List=pd.read_excel(filename,sheet_name="start_point_list",usecols=(0,1,2),skiprows=0)
+    start_point_list= list(map(tuple,Start_List.values))
+    End_List=pd.read_excel(filename,sheet_name="end_point_list",usecols=(0,1,2),skiprows=0)
+    end_point_list= list(map(tuple,End_List.values))
     myTree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
     for index in range(len(end_point_list)):
         myTree.ray_casting(start_point_list[index], end_point_list[index])
@@ -46,8 +44,9 @@ def display_tree():
     
 
 def test_log():
+    input = Inputter()
     display_tree()
-    # input = Inputter()
+    
 
 if __name__=="__main__":
     test_log()
