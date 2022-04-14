@@ -28,10 +28,15 @@ TREE_CENTER=(50, 50 , 50)
 URI='radio://0/80/2M/E7E7E7E7E7'
 SENSOR_TH=400
 PLOT_SENSOR_DOWN=False
+# SPACE
+WIDTH=100
 # Visualization
-Offset_x = (math.pow(2, TREE_MAX_DEPTH) * TREE_RESOLUTION) / (2 *TREE_RESOLUTION)
-Offset_y = (math.pow(2, TREE_MAX_DEPTH) * TREE_RESOLUTION) / (2 *TREE_RESOLUTION)
-Offset_z = (10 / TREE_RESOLUTION)
+# Offset_x = (math.pow(2, TREE_MAX_DEPTH) * TREE_RESOLUTION) / (2 *TREE_RESOLUTION)
+# Offset_y = (math.pow(2, TREE_MAX_DEPTH) * TREE_RESOLUTION) / (2 *TREE_RESOLUTION)
+# Offset_z = (10 / TREE_RESOLUTION)
+Offset_x = 0
+Offset_y = 0
+Offset_z = 0
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger()

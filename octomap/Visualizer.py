@@ -25,7 +25,7 @@ class Visualizer:
         occu_node_coor_list = []
         free_node_coor_list = []
         # TODO: read csv
-        filename="/point_list.xls"
+        filename="/octomap/point_list.xls"
         occu_nodes=pd.read_excel(os.path.dirname(os.getcwd()) + filename, sheet_name="occu_node_coor_list",
                                  usecols=(0, 1, 2), skiprows=0)
         occu_node_coor_list = list(map(tuple,occu_nodes.values))
@@ -46,9 +46,9 @@ class Visualizer:
         x, y, z = np.indices((indice_length, indice_length, indice_length))
 
         
-        # ax.set_xlim(-indice_length, indice_length)
-        # ax.set_ylim(-indice_length, indice_length)
-        # ax.set_zlim(-indice_length, indice_length)
+        ax.set_xlim(-indice_length, indice_length)
+        ax.set_ylim(-indice_length, indice_length)
+        ax.set_zlim(-indice_length, indice_length)
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_zlabel('z')
@@ -68,10 +68,11 @@ class Visualizer:
                 voxel_container = np.logical_or(voxel_container, free_voxel)
             else:
                 voxel_container = free_voxel
-                
-        colors = np.empty(voxel_container.shape, dtype=object)
-        colors[voxel_container] = 'green'
-        ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
+
+        if voxel_container is not None:
+            colors = np.empty(voxel_container.shape, dtype=object)
+            colors[voxel_container] = 'green'
+            ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
 
         # occupied space
         voxel_container = None
@@ -84,9 +85,10 @@ class Visualizer:
             else:
                 voxel_container = occu_voxel
 
-        colors = np.empty(voxel_container.shape, dtype=object)
-        colors[voxel_container] = 'red'
-        ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
+        if voxel_container is not None:
+            colors = np.empty(voxel_container.shape, dtype=object)
+            colors[voxel_container] = 'red'
+            ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
 
 
         # plt.savefig('./map.jpg', dpi=1200)
@@ -97,12 +99,12 @@ def main():
     loop_counter = 0
     plt.ion()
     
-    while loop_counter < 5:
+    while True:
         visualizer.visualize()
         loop_counter += 1
         print("Refresh " + str(loop_counter) + " times...")
         plt.pause(0.1)
-        
+
     plt.ioff()
     plt.show()
 
