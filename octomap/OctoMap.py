@@ -92,8 +92,10 @@ class OctoMap:
             int(measurement['x']),
             int(measurement['y']),
             int(measurement['z'])
-        ]        
+        ]
         end_points = self.get_end_point(start_point, measurement)
+        LOGGER.info("measurement: {}".format(measurement))
+        LOGGER.info("end_points: {}".format(end_points))
         for end_point in end_points:
             self.octotree.ray_casting(tuple(start_point), tuple(end_point))
 
@@ -102,6 +104,18 @@ class OctoMap:
         # TODO: new a thread to export
         if self.counter % 100 == 0:
             self.octotree.export_known_node()
+
+    def determine_threshold(self, point: tuple):
+        """
+        Determine whether it exceeds the scope of lighthouse and return the corresponding point
+        """
+        temp = list(point)
+        temp[0] = np.clip(temp[0], a_min=-SENSOR_TH / 2, a_max=SENSOR_TH / 2)
+        temp[1] = np.clip(temp[1], a_min=-SENSOR_TH / 2, a_max=SENSOR_TH / 2)
+        temp[2] = np.clip(temp[2], a_min=-SENSOR_TH / 2, a_max=SENSOR_TH / 2)
+        res = tuple(temp)
+        return res
+
 
     def rot(self, roll, pitch, yaw, origin, point):
         """
@@ -137,8 +151,9 @@ class OctoMap:
 
         tmp = np.subtract(point, origin)
         tmp2 = np.dot(rot, tmp)
-        res = np.around(np.add(tmp2, origin), decimals=1)
-        return tuple(res.tolist())
+        tmp3 = np.around(np.add(tmp2, origin), decimals=1)
+        tmp4 = tuple(tmp3.tolist())
+        self.determine_threshold(tmp4)
 
     def rotate_and_create_points(self, measurement, start_point):
         end_points = []
