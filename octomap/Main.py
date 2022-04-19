@@ -4,7 +4,7 @@ from RandomSearch import RandomSearch
 
 def main():
     octomap = OctoMap()
-    octomap.mapping()
+    octomap.start()
     # point_list = RandomSearch().plan(octomap.get_octotree())
 
 if __name__=="__main__":

@@ -1,8 +1,12 @@
+from email.policy import default
 import math
+import time
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 
+from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
+from cflib.positioning.motion_commander import MotionCommander
 from cflib.crazyflie.log import LogConfig
 import numpy as np
 
@@ -17,47 +21,72 @@ class OctoMap:
         self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
         self.counter = 0
 
-    def mapping(self):
+    def start(self):
         # Initialize the low-level drivers
         cflib.crtp.init_drivers()
         self.cf = Crazyflie(ro_cache=None, rw_cache='cache')
 
         # Connect callbacks from the Crazyflie API
-        try:
-            self.cf.connected.add_callback(self.connected)
-        except:
-            LOGGER.info("Connect failed.")
+        # try:
+        #     self.cf.connected.add_callback(self.connected)
+        # except:
+        #     LOGGER.info("Connect failed.")
+        self.connected(URI)
         self.cf.disconnected.add_callback(self.disconnected)
 
         # Connect to the Crazyflie
-        self.cf.open_link(URI)
+        # self.cf.open_link(URI)
 
     
     def connected(self, URI):
         LOGGER.info('We are now connected to {}'.format(URI))
 
-        # The definition of the logconfig
-        lmap = LogConfig(name='Mapping', period_in_ms=100)
-        
-        lmap.add_variable('stateEstimateZ.x')
-        lmap.add_variable('stateEstimateZ.y')
-        lmap.add_variable('stateEstimateZ.z')
-        
-        lmap.add_variable('range.front')
-        lmap.add_variable('range.back')
-        # lmap.add_variable('range.up')
-        # lmap.add_variable('range.left')
-        # lmap.add_variable('range.right')
-        # lmap.add_variable('range.zrange')
-
-        lmap.add_variable('stabilizer.roll')
-        lmap.add_variable('stabilizer.pitch')
-        lmap.add_variable('stabilizer.yaw')
-
         try:
-            self.cf.log.add_config(lmap)
-            lmap.data_received_cb.add_callback(self.mapping_data)
-            lmap.start()
+            with SyncCrazyflie(URI, cf=self.cf) as scf:
+                # Config the log content
+                logconf = LogConfig(name='Mapping', period_in_ms=100)
+                
+                logconf.add_variable('stateEstimateZ.x')
+                logconf.add_variable('stateEstimateZ.y')
+                logconf.add_variable('stateEstimateZ.z')
+                
+                logconf.add_variable('range.front')
+                logconf.add_variable('range.back')
+                # logconf.add_variable('range.up')
+                # logconf.add_variable('range.left')
+                # logconf.add_variable('range.right')
+                # logconf.add_variable('range.zrange')
+
+                logconf.add_variable('stabilizer.roll')
+                logconf.add_variable('stabilizer.pitch')
+                logconf.add_variable('stabilizer.yaw')
+
+                self.cf.log.add_config(logconf)
+                logconf.data_received_cb.add_callback(self.mapping_data)
+                logconf.start()
+
+                with MotionCommander(scf, 0.1) as mc:
+                    height = 30   # Obstacle height  cm
+                    max_counter = height / 10 
+                    loop_counter = 0
+                    while loop_counter < max_counter:
+                        time.sleep(1)
+                        # m m/s
+                        mc.right(0.5,velocity=0.1)
+                        # degree
+                        mc.turn_left(90)
+                        mc.right(0.5,velocity=0.1)
+                        
+                        mc.turn_left(90)
+                        mc.right(0.5,velocity=0.1)
+                        
+                        mc.turn_left(90)
+                        mc.right(0.5,velocity=0.1)
+                        mc.turn_left(90)
+                        
+                        mc.up(0.1)
+                        loop_counter+=1
+
         except KeyError as e:
             LOGGER.info('Could not start log configuration,'
                   '{} not found in TOC'.format(str(e)))
