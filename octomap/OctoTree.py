@@ -206,11 +206,14 @@ class OctoTree:
         sheet_occu_node.write(0, 1, label = 'y')
         sheet_occu_node.write(0, 2, label = 'z')
         sheet_occu_node.write(0, 3, label = date_value)
+        sheet_occu_node.write(0, 4, label = len(occu_node_coor_list))
 
         sheet_free_node.write(0, 0, label = 'x')
         sheet_free_node.write(0, 1, label = 'y')
         sheet_free_node.write(0, 2, label = 'z')
         sheet_free_node.write(0, 3, label = date_value)
+        sheet_occu_node.write(0, 4, label = len(free_node_coor_list))
+
         for i in range(len(occu_node_coor_list)):
             sheet_occu_node.write(i + 1, 0, occu_node_coor_list[i][0])
             sheet_occu_node.write(i + 1, 1, occu_node_coor_list[i][1])

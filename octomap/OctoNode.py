@@ -79,9 +79,9 @@ class OctoNode:
         Returns:
             whether the point is contained by this node --- bool
         """
-        return (origin[0] <= point[0] < (origin[0] + width)) and \
-               (origin[1] <= point[1] < (origin[1] + width)) and \
-               (origin[2] <= point[2] < (origin[2] + width))
+        return ((origin[0] <= point[0] < (origin[0] + width)) and \
+                (origin[1] <= point[1] < (origin[1] + width)) and \
+                (origin[2] <= point[2] < (origin[2] + width)))
 
     @staticmethod
     def cal_origin(index: int, origin: tuple, width: int):
