@@ -20,25 +20,18 @@ class OctoMap:
     def __init__(self):
         self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
         self.counter = 0
-
+        
     def start(self):
         # Initialize the low-level drivers
         cflib.crtp.init_drivers()
-        self.cf = Crazyflie(ro_cache=None, rw_cache='cache')
-
-        # Connect callbacks from the Crazyflie API
-        # try:
-        #     self.cf.connected.add_callback(self.connected)
-        # except:
-        #     LOGGER.info("Connect failed.")
-        self.connected(URI)
+        self.cf = Crazyflie(rw_cache='cache')
+        self.cf.connected.add_callback(self.connected)
         self.cf.disconnected.add_callback(self.disconnected)
 
         # Connect to the Crazyflie
-        # self.cf.open_link(URI)
-
+        self.connect(URI)
     
-    def connected(self, URI):
+    def connect(self, URI):
         LOGGER.info('We are now connected to {}'.format(URI))
 
         try:
@@ -92,6 +85,9 @@ class OctoMap:
                   '{} not found in TOC'.format(str(e)))
         except AttributeError:
             LOGGER.info('Could not add Measurement log config, bad configuration.')
+
+    def connected(self, URI):
+        LOGGER.info('Connected')
 
     def disconnected(self, URI):
         LOGGER.info('Disconnected')
