@@ -34,58 +34,61 @@ class OctoMap:
     def connect(self, URI):
         LOGGER.info('We are now connected to {}'.format(URI))
 
-        try:
-            with SyncCrazyflie(URI, cf=self.cf) as scf:
-                # Config the log content
-                logconf = LogConfig(name='Mapping', period_in_ms=100)
-                
-                logconf.add_variable('stateEstimateZ.x')
-                logconf.add_variable('stateEstimateZ.y')
-                logconf.add_variable('stateEstimateZ.z')
-                
-                logconf.add_variable('range.front')
-                logconf.add_variable('range.back')
-                # logconf.add_variable('range.up')
-                # logconf.add_variable('range.left')
-                # logconf.add_variable('range.right')
-                # logconf.add_variable('range.zrange')
 
-                logconf.add_variable('stabilizer.roll')
-                logconf.add_variable('stabilizer.pitch')
-                logconf.add_variable('stabilizer.yaw')
+        # with SyncCrazyflie(URI, cf=self.cf) as scf:
+            # Config the log content
+        self.cf.open_link(URI)
+        logconf = LogConfig(name='Mapping', period_in_ms=100)
+        logconf.add_variable('stateEstimateZ.x')
+        logconf.add_variable('stateEstimateZ.y')
+        logconf.add_variable('stateEstimateZ.z')
+        
+        logconf.add_variable('range.front')
+        logconf.add_variable('range.back')
+        # logconf.add_variable('range.up')
+        # logconf.add_variable('range.left')
+        # logconf.add_variable('range.right')
+        # logconf.add_variable('range.zrange')
 
-                self.cf.log.add_config(logconf)
-                logconf.data_received_cb.add_callback(self.mapping_data)
-                logconf.start()
-
-                with MotionCommander(scf, 0.1) as mc:
-                    height = 30   # Obstacle height  cm
-                    max_counter = height / 10 
-                    loop_counter = 0
-                    while loop_counter < max_counter:
-                        time.sleep(1)
-                        # m m/s
-                        mc.right(0.5,velocity=0.1)
-                        # degree
-                        mc.turn_left(90)
-                        mc.right(0.5,velocity=0.1)
+        logconf.add_variable('stabilizer.roll')
+        logconf.add_variable('stabilizer.pitch')
+        logconf.add_variable('stabilizer.yaw')
+        print('test')
+        # try:
+        self.cf.log.add_config(logconf)
+        print('test1')
+        logconf.data_received_cb.add_callback(self.mapping_data)
+        logconf.start()
+            
+                # with MotionCommander(scf, 0.2) as mc:
+                #     height = 20   # Obstacle height  cm
+                #     max_counter = height / 10 
+                #     loop_counter = 0
+                #     while loop_counter < max_counter:
+                #         time.sleep(1)
+                #         # m m/s
+                #         mc.right(0.5,velocity=0.1)
+                #         # degree
+                #         mc.turn_left(90)
+                #         mc.right(0.5,velocity=0.1)
                         
-                        mc.turn_left(90)
-                        mc.right(0.5,velocity=0.1)
+                #         mc.turn_left(90)
+                #         mc.right(0.5,velocity=0.1)
                         
-                        mc.turn_left(90)
-                        mc.right(0.5,velocity=0.1)
-                        mc.turn_left(90)
+                #         mc.turn_left(90)
+                #         mc.right(0.5,velocity=0.1)
+                #         mc.turn_left(90)
                         
-                        mc.up(0.1)
-                        loop_counter+=1
+                #         # mc.up(0.1)
+                #         loop_counter+=1
 
-        except KeyError as e:
-            LOGGER.info('Could not start log configuration,'
-                  '{} not found in TOC'.format(str(e)))
-        except AttributeError:
-            LOGGER.info('Could not add Measurement log config, bad configuration.')
-
+        # except KeyError as e:
+        #     LOGGER.info('Could not start log configuration,'
+        #           '{} not found in TOC'.format(str(e)))
+        # except AttributeError:
+        #     LOGGER.info('Could not add Measurement log config, bad configuration.')
+        # finally:
+        #     print("test2")
     def connected(self, URI):
         LOGGER.info('Connected')
 
@@ -118,7 +121,7 @@ class OctoMap:
             int(measurement['y']),
             int(measurement['z'])
         ]
-        # LOGGER.info("measurement: {}".format(measurement))
+        LOGGER.info("measurement: {}".format(measurement))
         end_points = self.get_end_point(start_point, measurement)
         # LOGGER.info("end_points: {}".format(end_points))
         for end_point in end_points:

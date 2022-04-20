@@ -25,11 +25,12 @@ class Visualizer:
         occu_node_coor_list = []
         free_node_coor_list = []
         # TODO: read csv
-        filename="/octomap/point_list.xls"
-        occu_nodes=pd.read_excel(os.path.dirname(os.getcwd()) + filename, sheet_name="occu_node_coor_list",
+        filename="point_list.xls"
+        occu_nodes=pd.read_excel( filename, sheet_name="occu_node_coor_list",
                                  usecols=(0, 1, 2), skiprows=0)
+        
         occu_node_coor_list = list(map(tuple,occu_nodes.values))
-        free_nodes=pd.read_excel(os.path.dirname(os.getcwd()) + filename, sheet_name="free_node_coor_list",
+        free_nodes=pd.read_excel( filename, sheet_name="free_node_coor_list",
                                  usecols=(0, 1, 2), skiprows=0)
         free_node_coor_list= list(map(tuple,free_nodes.values))
         return occu_node_coor_list, free_node_coor_list
@@ -59,20 +60,20 @@ class Visualizer:
         scatter: The speed is fast but the observation effect is not ideal
         """
         # free space
-        # voxel_container = None
-        # for i in range(len(free_node_coor_list)):
-        #     free_voxel = (x >= free_node_coor_list[i][0] + Offset_x) & (x < free_node_coor_list[i][0] + 1 + Offset_x) \
-        #                 & (y >= free_node_coor_list[i][1] + Offset_y) & (y < free_node_coor_list[i][1] + 1 + Offset_y) \
-        #                 & (z >= free_node_coor_list[i][2] + Offset_z) & (z < free_node_coor_list[i][2] + 1 + Offset_z)
-        #     if voxel_container is not None:
-        #         voxel_container = np.logical_or(voxel_container, free_voxel)
-        #     else:
-        #         voxel_container = free_voxel
+        voxel_container = None
+        for i in range(len(free_node_coor_list)):
+            free_voxel = (x >= free_node_coor_list[i][0] + Offset_x) & (x < free_node_coor_list[i][0] + 1 + Offset_x) \
+                        & (y >= free_node_coor_list[i][1] + Offset_y) & (y < free_node_coor_list[i][1] + 1 + Offset_y) \
+                        & (z >= free_node_coor_list[i][2] + Offset_z) & (z < free_node_coor_list[i][2] + 1 + Offset_z)
+            if voxel_container is not None:
+                voxel_container = np.logical_or(voxel_container, free_voxel)
+            else:
+                voxel_container = free_voxel
 
-        # if voxel_container is not None:
-        #     colors = np.empty(voxel_container.shape, dtype=object)
-        #     colors[voxel_container] = 'green'
-        #     ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
+        if voxel_container is not None:
+            colors = np.empty(voxel_container.shape, dtype=object)
+            colors[voxel_container] = 'green'
+            ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
 
         # occupied space
         voxel_container = None

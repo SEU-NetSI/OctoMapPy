@@ -1,5 +1,6 @@
 import datetime
 import math
+from matplotlib.pyplot import grid
 import numpy as np
 import xlwt
 
@@ -84,12 +85,14 @@ class OctoTree:
             end_point: the coordinate of the observation point  --- (x,y,z): tuple
             diff_logodds: the difference value of logodds
         """
+        print("test")
         if len(start_point) != 3 or len(end_point) != 3:
             raise ValueError("Point should be tuple (x,y,z)")
         # insert occu node
         self.insert_point(end_point)
         # insert free node
         grid_path: list = self.bresenham3D(start_point, end_point)
+        print(grid_path)
         for point in grid_path:
             self._root.update(point, diff_logodds, self.origin, self.width, self._max_depth)
 
@@ -206,13 +209,13 @@ class OctoTree:
         sheet_occu_node.write(0, 1, label = 'y')
         sheet_occu_node.write(0, 2, label = 'z')
         sheet_occu_node.write(0, 3, label = date_value)
-        # sheet_occu_node.write(0, 4, label = len(occu_node_coor_list))
+        sheet_occu_node.write(0, 4, label = len(occu_node_coor_list))
 
         sheet_free_node.write(0, 0, label = 'x')
         sheet_free_node.write(0, 1, label = 'y')
         sheet_free_node.write(0, 2, label = 'z')
         sheet_free_node.write(0, 3, label = date_value)
-        # sheet_occu_node.write(0, 4, label = len(free_node_coor_list))
+        sheet_free_node.write(0, 4, label = len(free_node_coor_list))
 
         for i in range(len(occu_node_coor_list)):
             sheet_occu_node.write(i + 1, 0, occu_node_coor_list[i][0])
@@ -249,7 +252,7 @@ class OctoTree:
             """
             queue = childNodes
 
-        
+        print("leaf_nodes: ",len(leaf_nodes))
         return leaf_nodes
 
     @staticmethod
@@ -261,6 +264,7 @@ class OctoTree:
         for node in leaf_node_list:
             if node.get_log_odds() == OCCUPANY_LOGODDS or node.get_log_odds() == FREE_LOGODDS:
                 threshold_node_list.append(node)
+        print("threshold_node_list: ",len(threshold_node_list))
         return threshold_node_list
     
     @staticmethod
