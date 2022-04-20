@@ -44,11 +44,6 @@ class OctoMap:
         lmap.add_variable('stateEstimateZ.z')
         
         lmap.add_variable('range.front')
-        lmap.add_variable('range.back')
-        # lmap.add_variable('range.up')
-        # lmap.add_variable('range.left')
-        # lmap.add_variable('range.right')
-        # lmap.add_variable('range.zrange')
 
         lmap.add_variable('stabilizer.roll')
         lmap.add_variable('stabilizer.pitch')
@@ -59,10 +54,9 @@ class OctoMap:
             lmap.data_received_cb.add_callback(self.mapping_data)
             lmap.start()
         except KeyError as e:
-            LOGGER.info('Could not start log configuration,'
-                  '{} not found in TOC'.format(str(e)))
+            LOGGER.error('Could not start log configuration,''{} not found in TOC'.format(str(e)))
         except AttributeError:
-            LOGGER.info('Could not add Measurement log config, bad configuration.')
+            LOGGER.error('Could not add Measurement log config, bad configuration.')
 
     def disconnected(self, URI):
         LOGGER.info('Disconnected')
