@@ -12,5 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Unit Testing With Python
-        uses: PrajjawalBanati/Python-actions@0.0.1
+    - name: Pytest coverage comment
+      uses: MishaKav/pytest-coverage-comment@main
+      with:
+        pytest-coverage-path: ./pytest-coverage.txt
+        junitxml-path: ./pytest.xml
