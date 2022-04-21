@@ -89,7 +89,6 @@ class OctoTree:
         self.insert_point(end_point)
         # Insert free voxel
         grid_path: list = bresenham3D(start_point, end_point)
-        print('grid_path:',grid_path)
         for point in grid_path:
             self._root.update(point, diff_logodds, self.origin, self.width, self._max_depth)
 

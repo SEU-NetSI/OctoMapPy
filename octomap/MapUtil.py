@@ -17,7 +17,6 @@ def determine_threshold(point: tuple):
     temp[1] = np.clip(temp[1], a_min=-WIDTH / 2, a_max=WIDTH / 2)
     temp[2] = np.clip(temp[2], a_min=-WIDTH / 2, a_max=WIDTH / 2)
     res = tuple(temp)
-    print('before_point:',point,'after_point:',res)
     return res
 
 def rot(roll, pitch, yaw, origin, point):
@@ -209,7 +208,6 @@ def get_threshold_node_list(leaf_node_list):
     for node in leaf_node_list:
         if node.get_log_odds() == OCCUPANY_LOGODDS or node.get_log_odds() == FREE_LOGODDS:
             threshold_node_list.append(node)
-    print("threshold_node_list: ",len(threshold_node_list))
     return threshold_node_list
 
 def get_classified_node_list(threshold_node_list):

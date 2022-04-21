@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import os
 
-from Config import TREE_MAX_DEPTH, Offset_x, Offset_y, Offset_z
+from Config import LOGGER, TREE_MAX_DEPTH, Offset_x, Offset_y, Offset_z
 from OctoNode import OctoNode
 
 

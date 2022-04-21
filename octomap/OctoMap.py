@@ -36,7 +36,6 @@ class OctoMap:
         with SyncCrazyflie(URI, cf=self.cf) as scf:
             try:
                 lmap = get_log_config()
-                print(lmap)
                 self.cf.log.add_config(lmap)
                 lmap.data_received_cb.add_callback(self.update_map)
                 lmap.start()
@@ -46,9 +45,7 @@ class OctoMap:
             except AttributeError:
                 LOGGER.error('Could not add Measurement log config, bad configuration.')
             if WHETHER_FLY:
-                print("fly")
                 with MotionCommander(self.cf, 0.3) as mc:
-                    print('test')
                     height = 40   # Obstacle height (cm)
                     max_counter = height / 10 
                     loop_counter = 0
@@ -70,11 +67,9 @@ class OctoMap:
         LOGGER.info('Disconnected with {}'.format(URI))
 
     def update_map(self, timestamp, data, logconf):
+        start_time = time.time()
         measurement, start_point = parse_log_data(data)
         end_points = get_end_point(start_point, measurement)
-        print('start_points:',start_point)
-        print('end_points:',end_points)
-        print('_')
         for end_point in end_points:
             self.octotree.ray_casting(tuple(start_point), tuple(end_point))
 
@@ -83,6 +78,9 @@ class OctoMap:
         # TODO: new a thread to export
         if self.counter % 100 == 0:
             self.octotree.export_known_voxel()
+        
+        end_time = time.time()
+        print('Running time: %s s' % ((end_time - start_time)))
     
     #TODO: Random Search Path Planning
     def plan_path():
