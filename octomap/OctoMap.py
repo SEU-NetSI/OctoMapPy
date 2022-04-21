@@ -15,7 +15,6 @@ from Config import TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION
 from OctoTree import OctoTree
 
 
-
 class OctoMap:
     def __init__(self):
         self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
