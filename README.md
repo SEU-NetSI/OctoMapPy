@@ -10,7 +10,7 @@ In this repository, we provide a basic implementation of OctoMap and a visualiza
 # Config
 > There are many parameters in the `Config.py`, but you should consider only some of them at the most time.
 
-- TREE_CENTER: Indicates an area that can be represented by an octree centered on this point. When the insertion point exceeds this area, the error "Point is not contained in node." will be prompted
+- TREE_CENTER: Indicates an area that can be represented by an octree centered on this point. When the insertion point exceeds this area, the error "Point is not contained in voxel." will be prompted
 
 - SENSOR_TH: The distance measurement of the VL53L1X series laser sensor used by the Multi-ranger deck in this project is accurate within 400cm. This value is determined by the configuration of the selected sensor
 

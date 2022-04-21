@@ -1,5 +1,6 @@
 import math
 from Config import DEFAULT_LOGODDS, OCCUPANY_LOGODDS, FREE_LOGODDS
+from octomap.Config import LOGGER
 
 
 class OctoNode:
@@ -37,6 +38,10 @@ class OctoNode:
         return self._children != ()
 
     def get_children(self):
+        """
+        Returns:
+            node's childern --- tuple
+        """
         return self._children
 
     def _split(self):
@@ -44,8 +49,6 @@ class OctoNode:
         Splits the node into 8 child nodes.
         Child nodes are given the occupancy probability of this parent node as the initial probability
         """
-        # temp: list = [OctoNode()] * 8
-        # self._children = tuple(temp)
         self._children = (
         OctoNode(), OctoNode(), OctoNode(),
         OctoNode(), OctoNode(), OctoNode(),
@@ -64,9 +67,6 @@ class OctoNode:
             the index of the child --- int
         """
         if not self.contains(point, origin, width):
-            # print(point)
-            # print(origin)
-            # print(width)
             raise ValueError('Point is not contained in node.')
 
         return (1 if point[0] >= origin[0] + width / 2 else 0) + \
@@ -121,7 +121,11 @@ class OctoNode:
         else:
             if not self.has_children():
                 self._split()
-            child_index: int = self.index(point, origin, width)
+            try:
+                child_index: int = self.index(point, origin, width)
+            except ValueError as e:
+                LOGGER.error(e)
+                LOGGER.error(point)
             self._children[child_index].update(point, diff_logodds, self.cal_origin(child_index, origin, width), 
                                                width / 2, max_depth - 1)
 
