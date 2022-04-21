@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.9.7, pytest-7.1.1, pluggy-1.0.0 -- /usr/local/opt/python@3.9/bin/python3.9
+cachedir: .pytest_cache
+rootdir: /Users/raven/workspace/lab/octomap
+plugins: typeguard-2.13.3
+collecting ... collected 2 items
+
+octomap/OctoMap_test.py::TestOctoTree::test_create_tree PASSED           [ 50%]
+octomap/OctoMap_test.py::TestOctoTree::test_tree_range PASSED            [100%]
+
+------ generated xml file: /Users/raven/workspace/lab/octomap/pytest.xml -------
+============================== 2 passed in 0.14s ===============================
