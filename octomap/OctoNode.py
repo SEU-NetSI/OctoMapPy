@@ -122,11 +122,12 @@ class OctoNode:
                 self._split()
             try:
                 child_index: int = self.index(point, origin, width)
+                self._children[child_index].update(point, diff_logodds, self.cal_origin(child_index, origin, width), 
+                                                width / 2, max_depth - 1)                
             except ValueError as e:
                 LOGGER.error(e)
                 LOGGER.error(point)
-            self._children[child_index].update(point, diff_logodds, self.cal_origin(child_index, origin, width), 
-                                               width / 2, max_depth - 1)
+
 
     def _update_logodds(self, diff_logodds):
         """

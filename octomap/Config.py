@@ -1,4 +1,5 @@
 import logging
+import math
 
 """
 The probability change for each new observation.
@@ -37,7 +38,7 @@ TREE_MAX_DEPTH=5
 #             math.pow(2 , TREE_MAX_DEPTH) * TREE_RESOLUTION / 2,
 #             math.pow(2 , TREE_MAX_DEPTH) * TREE_RESOLUTION / 2)
 # TODO: The setting of the midpoint changes the output
-TREE_CENTER=(50, 50 , 50)     # regional center point
+TREE_CENTER=(0, 0, 0)     # regional center point
 
 """
 Crazyflie and its laser sensor.
@@ -45,22 +46,19 @@ Crazyflie and its laser sensor.
 URI='radio://0/80/2M/E7E7E7E7E7'
 SENSOR_TH=400
 PLOT_SENSOR_DOWN=False
-WHETHER_FLY=False
+WHETHER_FLY=True
 
 """
 Visualization.
 The coornidate under the OctoTree should be adjusted to the Matplotlib.
 """
 # SPACE
-WIDTH=256     # The width of the experimental scene
+WIDTH=TREE_RESOLUTION * math.pow(2, TREE_MAX_DEPTH)     # The width of the experimental scene
 # Visualize point offsets
 # Offset half the width of the experimental area so that all coordinate points are turned to positive values
-# Offset_x = WIDTH / (2 *TREE_RESOLUTION) 
-# Offset_y = WIDTH / (2 *TREE_RESOLUTION)
-# Offset_z = 0
-Offset_x = 0
-Offset_y = 0
-Offset_z = 0  
+Offset_x = math.pow(2, TREE_MAX_DEPTH) / 2
+Offset_y = math.pow(2, TREE_MAX_DEPTH) / 2
+Offset_z = math.pow(2, TREE_MAX_DEPTH) / 2
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.INFO)
