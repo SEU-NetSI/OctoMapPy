@@ -47,16 +47,18 @@ class OctoMap:
                 LOGGER.error('Could not add Measurement log config, bad configuration.')
             if WHETHER_FLY:
                 print("fly")
-                with MotionCommander(self.cf, 0.2) as mc:
+                with MotionCommander(self.cf, 0.3) as mc:
                     print('test')
-                    height = 20   # Obstacle height (cm)
+                    height = 40   # Obstacle height (cm)
                     max_counter = height / 10 
                     loop_counter = 0
                     while loop_counter < max_counter:
                         time.sleep(1)
-                        for i in range(4):
-                            mc.right(0.8, velocity=0.1)
-                            mc.turn_left(90)
+                        for j in range(2):
+                            for i in range(4):
+                                mc.right(1.5, velocity=0.15)
+                                mc.turn_left(90)
+                                time.sleep(1)
                         
                         mc.up(0.1)
                         loop_counter += 1
@@ -70,6 +72,9 @@ class OctoMap:
     def update_map(self, timestamp, data, logconf):
         measurement, start_point = parse_log_data(data)
         end_points = get_end_point(start_point, measurement)
+        print('start_points:',start_point)
+        print('end_points:',end_points)
+        print('_')
         for end_point in end_points:
             self.octotree.ray_casting(tuple(start_point), tuple(end_point))
 

@@ -33,7 +33,7 @@ TREE_MAX_DEPTH: the recursion of the tree.
 So, the size of the OctoTree is TREE_RESOLUTION * 2^TREE_MAX_DEPTH.
 """
 TREE_RESOLUTION=4
-TREE_MAX_DEPTH=5
+TREE_MAX_DEPTH=6
 # TREE_CENTER=(math.pow(2 , TREE_MAX_DEPTH) * TREE_RESOLUTION / 2,
 #             math.pow(2 , TREE_MAX_DEPTH) * TREE_RESOLUTION / 2,
 #             math.pow(2 , TREE_MAX_DEPTH) * TREE_RESOLUTION / 2)
@@ -43,7 +43,7 @@ TREE_CENTER=(0, 0, 0)     # regional center point
 """
 Crazyflie and its laser sensor.
 """
-URI='radio://0/80/2M/E7E7E7E7E7'
+URI='radio://0/60/2M/E7E7E7E7E7'
 SENSOR_TH=400
 PLOT_SENSOR_DOWN=False
 WHETHER_FLY=True

@@ -17,6 +17,7 @@ def determine_threshold(point: tuple):
     temp[1] = np.clip(temp[1], a_min=-WIDTH / 2, a_max=WIDTH / 2)
     temp[2] = np.clip(temp[2], a_min=-WIDTH / 2, a_max=WIDTH / 2)
     res = tuple(temp)
+    print('before_point:',point,'after_point:',res)
     return res
 
 def rot(roll, pitch, yaw, origin, point):
