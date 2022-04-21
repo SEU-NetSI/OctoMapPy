@@ -1,6 +1,5 @@
 import math
-from Config import DEFAULT_LOGODDS, OCCUPANY_LOGODDS, FREE_LOGODDS
-from octomap.Config import LOGGER
+from Config import LOGGER, DEFAULT_LOGODDS, OCCUPANY_LOGODDS, FREE_LOGODDS
 
 
 class OctoNode:

@@ -17,7 +17,7 @@ class OctoMap:
         self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
         self.counter = 0
         LOGGER.info("OctoTree has been build, the coordinate range is from {} to {}".
-        format(-TREE_RESOLUTION * math(2, TREE_MAX_DEPTH), TREE_RESOLUTION * math(2, TREE_MAX_DEPTH)))
+        format(-TREE_RESOLUTION * math.pow(2, TREE_MAX_DEPTH), TREE_RESOLUTION * math.pow(2, TREE_MAX_DEPTH)))
         
     def start(self):
         cflib.crtp.init_drivers()

@@ -151,3 +151,15 @@ class OctoTree:
             queue = child_nodes
 
         return leaf_nodes
+    
+    def get_center(self):
+        return self._center
+    
+    def get_resolution(self):
+        return self._resolution
+    
+    def get_max_depth(self):
+        return self._max_depth
+    
+    def get_root(self):
+        return self._root
