@@ -21,46 +21,48 @@ class OctoMap:
     def start(self):
         cflib.crtp.init_drivers()
         self.cf = Crazyflie(ro_cache=None, rw_cache='cache')
-
+        
         # Connect callbacks from the Crazyflie API
-        try:
-            self.cf.connected.add_callback(self.connected)
-        except:
-            LOGGER.info("Connect failed.")
+        self.cf.connected.add_callback(self.connected)
         self.cf.disconnected.add_callback(self.disconnected)
 
         # Connect to the Crazyflie
-        self.cf.open_link(URI)
+        self.connect(URI)
+        # self.cf.open_link(URI)
     
-    def connected(self, URI):
+    def connect(self, URI):
+        self.cf.open_link(URI)
         LOGGER.info('We are now connected to {}'.format(URI))
+        with SyncCrazyflie(URI, cf=self.cf) as scf:
+            try:
+                lmap = get_log_config()
+                print(lmap)
+                self.cf.log.add_config(lmap)
+                lmap.data_received_cb.add_callback(self.update_map)
+                lmap.start()
+                LOGGER.info("Log has been configured.")
+            except KeyError as e:
+                LOGGER.error('Could not start log configuration,''{} not found in TOC'.format(str(e)))
+            except AttributeError:
+                LOGGER.error('Could not add Measurement log config, bad configuration.')
+            if WHETHER_FLY:
+                print("fly")
+                with MotionCommander(self.cf, 0.2) as mc:
+                    print('test')
+                    height = 20   # Obstacle height (cm)
+                    max_counter = height / 10 
+                    loop_counter = 0
+                    while loop_counter < max_counter:
+                        time.sleep(1)
+                        for i in range(4):
+                            mc.right(0.8, velocity=0.1)
+                            mc.turn_left(90)
+                        
+                        mc.up(0.1)
+                        loop_counter += 1
 
-        try:
-            lmap = get_log_config()
-            print(lmap)
-            self.cf.log.add_config(lmap)
-            lmap.data_received_cb.add_callback(self.update_map)
-            lmap.start()
-            LOGGER.info("Log has been configured.")
-        except KeyError as e:
-            LOGGER.error('Could not start log configuration,''{} not found in TOC'.format(str(e)))
-        except AttributeError:
-            LOGGER.error('Could not add Measurement log config, bad configuration.')
-        
-        if WHETHER_FLY:
-            print("fly")
-            with MotionCommander(self.cf, 0.2) as mc:
-                height = 20   # Obstacle height (cm)
-                max_counter = height / 10 
-                loop_counter = 0
-                while loop_counter < max_counter:
-                    time.sleep(1)
-                    for i in range(4):
-                        mc.right(0.8, velocity=0.1)
-                        mc.turn_left(90)
-                    
-                    mc.up(0.1)
-                    loop_counter += 1
+    def connected(self, URI):
+        LOGGER.info('Connected with {}'.format(URI))
 
     def disconnected(self, URI):
         LOGGER.info('Disconnected with {}'.format(URI))
