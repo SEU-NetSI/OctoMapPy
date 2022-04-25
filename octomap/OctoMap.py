@@ -47,13 +47,13 @@ class OctoMap:
             if WHETHER_FLY:
                 with MotionCommander(self.cf, 0.3) as mc:
                     height = 40   # Obstacle height (cm)
-                    max_counter = height / 10 
+                    max_counter = (height-30) / 10 
                     loop_counter = 0
-                    while loop_counter < max_counter:
+                    while loop_counter <= max_counter:
                         time.sleep(1)
                         for j in range(2):
                             for i in range(4):
-                                mc.right(1.5, velocity=0.15)
+                                mc.right(1, velocity=0.15)
                                 mc.turn_left(90)
                                 time.sleep(1)
                         
@@ -67,7 +67,7 @@ class OctoMap:
         LOGGER.info('Disconnected with {}'.format(URI))
 
     def update_map(self, timestamp, data, logconf):
-        start_time = time.time()
+        # start_time = time.time()
         measurement, start_point = parse_log_data(data)
         end_points = get_end_point(start_point, measurement)
         for end_point in end_points:
@@ -79,8 +79,8 @@ class OctoMap:
         if self.counter % 100 == 0:
             self.octotree.export_known_voxel()
         
-        end_time = time.time()
-        print('Running time: %s s' % ((end_time - start_time)))
+        # end_time = time.time()
+        # print('Running time: %s s' % ((end_time - start_time)))
     
     #TODO: Random Search Path Planning
     def plan_path():

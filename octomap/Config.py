@@ -43,7 +43,7 @@ TREE_CENTER=(0, 0, 0)     # regional center point
 """
 Crazyflie and its laser sensor.
 """
-URI='radio://0/60/2M/E7E7E7E7E7'
+URI='radio://0/80/2M/E7E7E7E7E7'
 SENSOR_TH=400
 PLOT_SENSOR_DOWN=False
 WHETHER_FLY=True
