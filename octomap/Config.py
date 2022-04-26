@@ -59,6 +59,8 @@ WIDTH=TREE_RESOLUTION * math.pow(2, TREE_MAX_DEPTH)     # The width of the exper
 Offset_x = math.pow(2, TREE_MAX_DEPTH) / 2
 Offset_y = math.pow(2, TREE_MAX_DEPTH) / 2
 Offset_z = math.pow(2, TREE_MAX_DEPTH) / 2
+#Animation effect for RRT algorithm display
+Show_Animation = True
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.INFO)
