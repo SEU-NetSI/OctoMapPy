@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import os
 
-from Config import LOGGER, TREE_MAX_DEPTH, Offset_x, Offset_y, Offset_z
+from Config import LOGGER, TREE_MAX_DEPTH, OFFSETX, OFFSETY, OFFSETZ
 from OctoNode import OctoNode
 
 
@@ -62,9 +62,9 @@ class Visualizer:
         # free space
         voxel_container = None
         for i in range(len(free_node_coor_list)):
-            free_voxel = (x >= free_node_coor_list[i][0] + Offset_x) & (x < free_node_coor_list[i][0] + 1 + Offset_x) \
-                        & (y >= free_node_coor_list[i][1] + Offset_y) & (y < free_node_coor_list[i][1] + 1 + Offset_y) \
-                        & (z >= free_node_coor_list[i][2] + Offset_z) & (z < free_node_coor_list[i][2] + 1 + Offset_z)
+            free_voxel = (x >= free_node_coor_list[i][0] + OFFSETX) & (x < free_node_coor_list[i][0] + 1 + OFFSETX) \
+                        & (y >= free_node_coor_list[i][1] + OFFSETY) & (y < free_node_coor_list[i][1] + 1 + OFFSETY) \
+                        & (z >= free_node_coor_list[i][2] + OFFSETZ) & (z < free_node_coor_list[i][2] + 1 + OFFSETZ)
             if voxel_container is not None:
                 voxel_container = np.logical_or(voxel_container, free_voxel)
             else:
@@ -78,9 +78,9 @@ class Visualizer:
         # occupied space
         voxel_container = None
         for i in range(len(occu_node_coor_list)):
-            occu_voxel = (x >= occu_node_coor_list[i][0] + Offset_x) & (x < occu_node_coor_list[i][0] + 1 + Offset_x) \
-                         & (y >= occu_node_coor_list[i][1] + Offset_y) & (y < occu_node_coor_list[i][1] + 1 + Offset_y) \
-                         & (z >= occu_node_coor_list[i][2] + Offset_z) & (z < occu_node_coor_list[i][2] + 1 + Offset_z)
+            occu_voxel = (x >= occu_node_coor_list[i][0] + OFFSETX) & (x < occu_node_coor_list[i][0] + 1 + OFFSETX) \
+                         & (y >= occu_node_coor_list[i][1] + OFFSETY) & (y < occu_node_coor_list[i][1] + 1 + OFFSETY) \
+                         & (z >= occu_node_coor_list[i][2] + OFFSETZ) & (z < occu_node_coor_list[i][2] + 1 + OFFSETZ)
             if voxel_container is not None:
                 voxel_container = np.logical_or(voxel_container, occu_voxel)
             else:

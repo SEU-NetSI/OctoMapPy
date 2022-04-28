@@ -8,12 +8,14 @@ from cflib.positioning.motion_commander import MotionCommander
 
 from Config import URI, LOGGER, TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION, WHETHER_FLY
 from OctoTree import OctoTree
+from PathPlan import PathPlan
 from MapUtil import get_log_config, parse_log_data, get_end_point
 
 
 class OctoMap:
     def __init__(self):
         self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
+        self.path_planner = PathPlan()
         self.counter = 0
         LOGGER.info("OctoTree has been build, the coordinate range is from {} to {}".
         format(-TREE_RESOLUTION * math.pow(2, TREE_MAX_DEPTH) / 2, TREE_RESOLUTION * math.pow(2, TREE_MAX_DEPTH) / 2))
@@ -83,5 +85,6 @@ class OctoMap:
         # print('Running time: %s s' % ((end_time - start_time)))
     
     #TODO: Random Search Path Planning
-    def plan_path():
-        pass
+    def plan_path(self, start_point=(0, 0, 0), end_point=(10, 10, 10)):
+        path: list = self.path_planner.planning(start_point, end_point)
+        return path
