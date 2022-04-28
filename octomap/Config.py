@@ -63,8 +63,10 @@ Offset_z = math.pow(2, TREE_MAX_DEPTH) / 2
 Show_Animation = True
 
 #RRT Path Planning
-GoalSampleRate = 0.05
-Expand_Step = 2
+GoalSampleRate = 0.05    # The probability of picking the target point
+Expand_Step = 2          # step size per growth
+Start_Point = (0, 0, 0)  # starting point
+End_Point = (10, 10, 10) # end point
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.INFO)
