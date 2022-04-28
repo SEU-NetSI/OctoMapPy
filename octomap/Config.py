@@ -54,6 +54,7 @@ Use offset to demonstrate the OctoMap in the center of Matplotlib Voxel.
 OFFSETX=math.pow(2, TREE_MAX_DEPTH) / 2
 OFFSETY=math.pow(2, TREE_MAX_DEPTH) / 2
 OFFSETZ=math.pow(2, TREE_MAX_DEPTH) / 2
+INDICE_LENGTH= math.pow(2, TREE_MAX_DEPTH)
 
 """
 Path Plan based on RRT.

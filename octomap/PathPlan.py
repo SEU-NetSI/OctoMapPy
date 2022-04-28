@@ -1,9 +1,11 @@
 import random
 import math
 import copy
+from matplotlib import pyplot as plt
+import numpy as np
 
 import pandas as pd
-from Config import GOAL_SAMPLE_RATE, EXPAND_STEP
+from Config import GOAL_SAMPLE_RATE, EXPAND_STEP, OFFSETX, OFFSETY, OFFSETZ,SHOW_ANIMATION,INDICE_LENGTH
 
 class Node:
     def __init__(self, value_x, value_y, value_z):
@@ -70,7 +72,7 @@ class PathPlan:
         """
         self.start = Node(start_point[0], start_point[1], start_point[2])
         self.end = Node(end_point[0], end_point[1], end_point[2])
-        self.node_list.append(self.start)
+        self.node_list = [self.start]
 
         while True:
             if random.random() > GOAL_SAMPLE_RATE:
@@ -100,6 +102,7 @@ class PathPlan:
             new_node.parent = min_index
 
             if not self.collision_check(new_node):
+                print("Wrong parameter,unable to plan path!!!")
                 continue
 
             self.node_list.append(new_node)
@@ -110,8 +113,8 @@ class PathPlan:
                           (new_node.value_z - self.end.value_z) **2)
             if d <= EXPAND_STEP:
                 break
-            # if show_animation:
-            #     self.draw_graph(rnd)
+            if SHOW_ANIMATION:
+                self.draw_dynamic_graph(random_new_node)
 
         path = [(self.end.value_x, self.end.value_y, self.end.value_z)]
         last_index = len(self.node_list) - 1
@@ -123,29 +126,86 @@ class PathPlan:
 
         return path
     
-    def draw_graph(self, rnd=None):
+    def draw_dynamic_graph(self, random_new_node=None):
         """
-        Draw Graph
+        Draw animation in process
         """
         plt.clf()
-        # fig = plt.figure()
         ax = plt.gca(projection='3d')
-
-        if rnd is not None:
-            ax.plot(rnd[0], rnd[1], rnd[2], "^g")
+        """
+        Randomly generated points represented by green triangles
+        """
+        if random_new_node is not None:
+            ax.plot(random_new_node[0]+OFFSETX, 
+                    random_new_node[1]+OFFSETY, 
+                    random_new_node[2]+OFFSETZ, "^g")
+        """
+        rrt tree represented by a green line
+        """
         for node in self.node_list:
             if node.parent is not None:
-                ax.plot([node.x, self.node_list[node.parent].x], [
-                    node.y, self.node_list[node.parent].y], [node.z, self.node_list[node.parent].z], "-g")
-
-        for (ox, oy, oz, size) in self.obstacleList:
-            ax.plot(ox, oy, oz, "sk", ms=10 * size)
-
-        ax.plot(self.start.x, self.start.y, self.start.z, "^r")
-        ax.plot(self.end.x, self.end.y, self.end.z, "^b")
-        # plt.axis([self.min_rand, self.max_rand, self.min_rand, self.max_rand])
-        ax.set_xlim(self.min_rand, self.max_rand)
-        ax.set_ylim(self.min_rand, self.max_rand)
-        ax.set_zlim(self.min_rand, self.max_rand)
+                ax.plot([node.value_x+OFFSETX, self.node_list[node.parent].value_x+OFFSETX],
+                        [node.value_y+OFFSETY, self.node_list[node.parent].value_y+OFFSETY], 
+                        [node.value_z+OFFSETZ, self.node_list[node.parent].value_z+OFFSETZ], "-g")
+        """
+        Obstacle points represented by black squares
+        """                
+        occu_node_coor_list = self.import_known_occu_node()
+        for (obstacle_x, obstacle_y, obstacle_z) in occu_node_coor_list:
+            ax.plot(obstacle_x+OFFSETX, obstacle_y+OFFSETY, obstacle_z+OFFSETZ, "sk", ms=10)
+        """
+        start_point is red, end_point is blue
+        """
+        ax.plot(self.start.value_x+OFFSETX, self.start.value_y+OFFSETY, self.start.value_z+OFFSETZ, "^r")
+        ax.plot(self.end.value_x+OFFSETX, self.end.value_y+OFFSETY, self.end.value_z+OFFSETZ, "^b")
+        """
+        set x, y, z axis limits
+        """
+        ax.set_xlim(0, INDICE_LENGTH)
+        ax.set_ylim(0, INDICE_LENGTH)
+        ax.set_zlim(0, INDICE_LENGTH)
         plt.grid(True)
         plt.pause(0.01)
+
+    def draw_static_graph(self, path):
+        """
+        Draw the final graph
+        """
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('z')
+        for node in self.node_list:
+            if node.parent is not None:
+                ax.plot([node.value_x+OFFSETX, self.node_list[node.parent].value_x+OFFSETX],
+                        [node.value_y+OFFSETY, self.node_list[node.parent].value_y+OFFSETY], 
+                        [node.value_z+OFFSETZ, self.node_list[node.parent].value_z+OFFSETZ], "-g")
+
+        occu_node_coor_list = self.import_known_occu_node()
+        x, y, z = np.indices((INDICE_LENGTH, INDICE_LENGTH, INDICE_LENGTH))
+        voxel_container = None
+        for i in range(len(occu_node_coor_list)):
+            occu_voxel = (x >= occu_node_coor_list[i][0] + OFFSETX) & (x < occu_node_coor_list[i][0] + 1 + OFFSETX) \
+                         & (y >= occu_node_coor_list[i][1] + OFFSETY) & (y < occu_node_coor_list[i][1] + 1 + OFFSETY) \
+                         & (z >= occu_node_coor_list[i][2] + OFFSETZ) & (z < occu_node_coor_list[i][2] + 1 + OFFSETZ)
+            if voxel_container is not None:
+                voxel_container = np.logical_or(voxel_container, occu_voxel)
+            else:
+                voxel_container = occu_voxel
+        if voxel_container is not None:
+            colors = np.empty(voxel_container.shape, dtype=object)
+            colors[voxel_container] = 'black'
+            ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
+
+        ax.set_xlim(0, INDICE_LENGTH)
+        ax.set_ylim(0, INDICE_LENGTH)
+        ax.set_zlim(0, INDICE_LENGTH)
+        """
+        Generated path indicated by red lines
+        """
+        ax.plot([data[0]+OFFSETX for data in path],
+                [data[1]+OFFSETY for data in path], 
+                [data[2]+OFFSETZ for data in path], '-r')
+        plt.grid(True)
+        plt.show()

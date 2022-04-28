@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import os
 
-from Config import LOGGER, TREE_MAX_DEPTH, OFFSETX, OFFSETY, OFFSETZ
+from Config import LOGGER, OFFSETX, OFFSETY, OFFSETZ,INDICE_LENGTH
 from OctoNode import OctoNode
 
 
@@ -41,10 +41,9 @@ class Visualizer:
         Draw a 3D occupancy grid 
         """
         plt.clf()
-        ax = self.fig.add_subplot(projection='3d')
-        indice_length = int(math.pow(2, TREE_MAX_DEPTH))    
+        ax = self.fig.add_subplot(projection='3d')   
         # x,y,z determined by the number of grids in that direction
-        x, y, z = np.indices((indice_length, indice_length, indice_length))
+        x, y, z = np.indices((INDICE_LENGTH, INDICE_LENGTH, INDICE_LENGTH))
 
         
         # ax.set_xlim(-indice_length, indice_length)
