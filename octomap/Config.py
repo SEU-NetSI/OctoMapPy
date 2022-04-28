@@ -62,6 +62,10 @@ Offset_z = math.pow(2, TREE_MAX_DEPTH) / 2
 #Animation effect for RRT algorithm display
 Show_Animation = True
 
+#RRT Path Planning
+GoalSampleRate = 0.05
+Expand_Step = 2
+
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger()
