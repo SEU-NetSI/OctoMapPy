@@ -66,6 +66,12 @@ EXPAND_STEP=2
 SHOW_ANIMATION=True
 
 """
+Flying experiment used for testing and SLAM without autonomous path planning.
+"""
+OBSTACLE_HEIGHT = 0.4
+TAKEOFF_HEIGHT = 0.3
+SIDE_LENGTH = 0.8
+"""
 Global logger.
 """
 # Only output errors from the logging framework

@@ -7,7 +7,7 @@ from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.motion_commander import MotionCommander
 from cflib.positioning.position_hl_commander import PositionHlCommander
 
-from Config import URI, LOGGER, TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION, WHETHER_FLY
+from Config import URI, LOGGER, TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION, WHETHER_FLY, OBSTACLE_HEIGHT, TAKEOFF_HEIGHT, SIDE_LENGTH
 from OctoTree import OctoTree
 from PathPlan import PathPlan
 from MapUtil import get_log_config, parse_log_data, get_end_point
@@ -48,49 +48,28 @@ class OctoMap:
             except AttributeError:
                 LOGGER.error('Could not add Measurement log config, bad configuration.')
             if WHETHER_FLY:
-                # with PositionHlCommander(
-                #         scf,
-                #         x=0.0, y=0.0, z=0.0,
-                #         default_height=0.3,
-                #         default_velocity=0.2,
-                #         controller=PositionHlCommander.CONTROLLER_PID) as pc:
-                #     height = 40  # Obstacle height (cm)
-                #     length = 0.3   # moving length (m)
-                #     max_counter = (height - 30) / 10
-                #     loop_counter = 0
-                #     while loop_counter <= max_counter:
-                #         time.sleep(1)
-                #         for i in range(1):
-                #             pc.right(length)
-                #             pc.forward(length)
-                #             pc.left(length)
-                #             pc.back(length)
-                #         print(pc.get_position())
-                #         pc.up(0.1)
-                #         loop_counter += 1  
-                #     pc.land()
-                with PositionHlCommander(
-                        self.cf,
-                        x=0.0, y=0.0, z=0.0,
-                        default_height=0.3,
-                        default_velocity=0.2,
-                        controller=PositionHlCommander.CONTROLLER_PID) as pc:
-                    height = 40  # Obstacle height (cm)
-                    flying_height =  0.3 # crazyflie flight altitude
-                    length = 0.8   # moving length (m)
-                    max_counter = (height - 30) / 10
-                    loop_counter = 0
-                    while loop_counter <= max_counter:
+                print("ready to fly")
+                with PositionHlCommander(crazyflie=scf, 
+                                        x=0.0, y=0.0, z=0.0,
+                                        default_height=0.3,
+                                        default_velocity=0.2,
+                                        controller=PositionHlCommander.CONTROLLER_PID) as pc:
+                    
+                    flying_height = TAKEOFF_HEIGHT
+                    up_times_total = (OBSTACLE_HEIGHT - TAKEOFF_HEIGHT) * 10
+                    up_times_real = 0
+                    while up_times_real <= up_times_total:
                         time.sleep(1)
                         pc.set_default_height(flying_height)
                         for i in range(1):
-                            pc.go_to(0,-length)
-                            pc.go_to(length,-length)   
-                            pc.go_to(length,0)
-                            pc.go_to(0,0)
+                            pc.go_to(0, 0)
+                            pc.go_to(0, -SIDE_LENGTH)
+                            pc.go_to(SIDE_LENGTH, -SIDE_LENGTH)   
+                            pc.go_to(SIDE_LENGTH, 0)
+                            pc.go_to(0, 0)
                         print(pc.get_position())
-                        flying_height +=0.1
-                        loop_counter += 1
+                        flying_height += 0.1
+                        up_times_real += 1
                     pc.land()
 
     def connected(self, URI):
@@ -100,6 +79,7 @@ class OctoMap:
         LOGGER.info('Disconnected with {}'.format(URI))
 
     def update_map(self, timestamp, data, logconf):
+        return
         # start_time = time.time()
         measurement, start_point = parse_log_data(data)
         end_points = get_end_point(start_point, measurement)
