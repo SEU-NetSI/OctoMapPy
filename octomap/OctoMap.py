@@ -7,7 +7,7 @@ from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.motion_commander import MotionCommander
 from cflib.positioning.position_hl_commander import PositionHlCommander
 
-from Config import URI, LOGGER, TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION, WHETHER_FLY, OBSTACLE_HEIGHT, TAKEOFF_HEIGHT, SIDE_LENGTH
+from Config import URI, LOGGER, TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION, WHETHER_FLY, OBSTACLE_HEIGHT, TAKEOFF_HEIGHT, SIDE_LENGTH,FLIGHT_SPEED
 from OctoTree import OctoTree
 from PathPlan import PathPlan
 from MapUtil import get_log_config, parse_log_data, get_end_point
@@ -51,8 +51,8 @@ class OctoMap:
                 print("ready to fly")
                 with PositionHlCommander(crazyflie=scf, 
                                         x=0.0, y=0.0, z=0.0,
-                                        default_height=0.3,
-                                        default_velocity=0.2,
+                                        default_height=TAKEOFF_HEIGHT,
+                                        default_velocity=FLIGHT_SPEED,
                                         controller=PositionHlCommander.CONTROLLER_PID) as pc:
                     
                     flying_height = TAKEOFF_HEIGHT
@@ -79,7 +79,7 @@ class OctoMap:
         LOGGER.info('Disconnected with {}'.format(URI))
 
     def update_map(self, timestamp, data, logconf):
-        return
+        
         # start_time = time.time()
         measurement, start_point = parse_log_data(data)
         end_points = get_end_point(start_point, measurement)

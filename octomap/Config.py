@@ -15,7 +15,7 @@ The probability threshold for occupany and free.
 If there is not threshold, the status change will be very hard and not in time. 
 When the probability of the voxel is arrived at the threshold, it indicates the voxel has been set occupied/free status.
 """
-OCCUPANY_LOGODDS=3.5
+OCCUPANY_LOGODDS=2.5
 OCCUPANY_PROBABILITY=0.97
 FREE_LOGODDS=-2
 FREE_PROBABILITY=0.12
@@ -53,7 +53,7 @@ Use offset to demonstrate the OctoMap in the center of Matplotlib Voxel.
 OFFSETX=math.pow(2, TREE_MAX_DEPTH) / 2
 OFFSETY=math.pow(2, TREE_MAX_DEPTH) / 2
 OFFSETZ=math.pow(2, TREE_MAX_DEPTH) / 2
-INDICE_LENGTH= math.pow(2, TREE_MAX_DEPTH)
+INDICE_LENGTH= int(math.pow(2, TREE_MAX_DEPTH))
 
 """
 Path Plan based on RRT.
@@ -70,7 +70,8 @@ Flying experiment used for testing and SLAM without autonomous path planning.
 """
 OBSTACLE_HEIGHT = 0.4
 TAKEOFF_HEIGHT = 0.3
-SIDE_LENGTH = 0.8
+SIDE_LENGTH = 1.0
+FLIGHT_SPEED = 0.1
 """
 Global logger.
 """

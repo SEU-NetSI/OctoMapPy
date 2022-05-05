@@ -125,8 +125,9 @@ class OctoNode:
                 self._children[child_index].update(point, diff_logodds, self.cal_origin(child_index, origin, width), 
                                                 width / 2, max_depth - 1)                
             except ValueError as e:
-                LOGGER.error(e)
-                LOGGER.error(point)
+                pass
+                # LOGGER.error(e)
+                # LOGGER.error(point)
 
 
     def _update_logodds(self, diff_logodds):
