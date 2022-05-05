@@ -5,6 +5,7 @@ import cflib.crtp
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.motion_commander import MotionCommander
+from cflib.positioning.position_hl_commander import PositionHlCommander
 
 from Config import URI, LOGGER, TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION, WHETHER_FLY
 from OctoTree import OctoTree
@@ -47,20 +48,50 @@ class OctoMap:
             except AttributeError:
                 LOGGER.error('Could not add Measurement log config, bad configuration.')
             if WHETHER_FLY:
-                with MotionCommander(self.cf, 0.3) as mc:
-                    height = 40   # Obstacle height (cm)
-                    max_counter = (height-30) / 10 
+                with PositionHlCommander(
+                        scf,
+                        x=0.0, y=0.0, z=0.0,
+                        default_height=0.3,
+                        default_velocity=0.2,
+                        controller=PositionHlCommander.CONTROLLER_PID) as pc:
+                    height = 40  # Obstacle height (cm)
+                    length = 0.6   # moving length (m)
+                    max_counter = (height - 30) / 10
                     loop_counter = 0
                     while loop_counter <= max_counter:
                         time.sleep(1)
-                        for j in range(2):
-                            for i in range(4):
-                                mc.right(1, velocity=0.15)
-                                mc.turn_left(90)
-                                time.sleep(1)
-                        
-                        mc.up(0.1)
-                        loop_counter += 1
+                        for i in range(2):
+                            pc.right(length)
+                            pc.forward(length)
+                            pc.left(length)
+                            pc.back(length)
+                        print(pc.get_position())
+                        pc.up(0.1)
+                        loop_counter += 1  
+                    pc.land()
+                # with PositionHlCommander(
+                #         scf,
+                #         x=0.0, y=0.0, z=0.0,
+                #         default_height=0.3,
+                #         default_velocity=0.2,
+                #         controller=PositionHlCommander.CONTROLLER_PID) as pc:
+                #     height = 40  # Obstacle height (cm)
+                #     flying_height =  0.3 # crazyflie flight altitude
+                #     length = 0.5   # moving length (m)
+                #     max_counter = (height - 30) / 10
+                #     loop_counter = 0
+                #     while loop_counter <= max_counter:
+                #         time.sleep(1)
+                #         pc.set_default_height(flying_height)
+                #         for i in range(2):
+                #             pc.go_to(0,-length)
+                #             pc.go_to(length,-length)   
+                #             pc.go_to(length,0)
+                #             pc.go_to(0,0)
+                #         print(pc.get_position())
+                #         flying_height +=0.1
+                #         loop_counter += 1
+                #     pc.land()
 
     def connected(self, URI):
         LOGGER.info('Connected with {}'.format(URI))

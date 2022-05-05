@@ -59,6 +59,18 @@ def rotate_and_create_points(measurement, start_point):
     if (measurement['front'] < SENSOR_TH):
         front = [start_point[0] + measurement['front'], start_point[1], start_point[2]]
         end_points.append(rot(roll, pitch, yaw, start_point, front))
+    
+    if (measurement['back'] < SENSOR_TH):
+        back = [start_point[0] - measurement['back'], start_point[1], start_point[2]]
+        end_points.append(rot(roll, pitch, yaw, start_point, back))
+    
+    if (measurement['left'] < SENSOR_TH):
+        left = [start_point[0], start_point[1] + measurement['left'], start_point[2]]
+        end_points.append(rot(roll, pitch, yaw, start_point, left))
+
+    if (measurement['right'] < SENSOR_TH):
+        right = [start_point[0], start_point[1] - measurement['right'] , start_point[2]]
+        end_points.append(rot(roll, pitch, yaw, start_point, right))
 
     return end_points
 
@@ -74,6 +86,9 @@ def get_log_config():
     lmap.add_variable('stateEstimateZ.z')
     
     lmap.add_variable('range.front')
+    lmap.add_variable('range.back')
+    lmap.add_variable('range.left')
+    lmap.add_variable('range.right')
 
     lmap.add_variable('stabilizer.roll')
     lmap.add_variable('stabilizer.pitch')
@@ -93,6 +108,9 @@ def parse_log_data(data):
         'yaw': round(data['stabilizer.yaw'], 2),
         # cm
         'front': data['range.front'] / 10,
+        'back': data['range.back'] / 10,
+        'left': data['range.left'] / 10,
+        'right': data['range.right']  / 10
     }
     start_point = [
         int(measurement['x']),
