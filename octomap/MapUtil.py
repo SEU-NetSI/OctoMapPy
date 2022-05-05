@@ -93,12 +93,7 @@ def get_log_config():
     lmap.add_variable('stabilizer.roll')
     lmap.add_variable('stabilizer.pitch')
     lmap.add_variable('stabilizer.yaw')
-    lmap.add_variable('motor.m1')
-    lmap.add_variable('motor.m2')
-    lmap.add_variable('motor.m3')
-    lmap.add_variable('motor.m4')
-
-
+    
     return lmap
 
 def parse_log_data(data):
