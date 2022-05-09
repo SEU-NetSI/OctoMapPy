@@ -1,5 +1,4 @@
 import math
-import time
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
@@ -59,18 +58,19 @@ class OctoMap:
                     up_times_total = (OBSTACLE_HEIGHT - TAKEOFF_HEIGHT) * 10
                     up_times_real = 0
                     while up_times_real <= up_times_total:
-                        time.sleep(1)
                         pc.set_default_height(flying_height)
-                        for i in range(1):
-                            pc.go_to(0, 0)
-                            pc.go_to(0, -SIDE_LENGTH)
-                            pc.go_to(SIDE_LENGTH, -SIDE_LENGTH)   
-                            pc.go_to(SIDE_LENGTH, 0)
-                            pc.go_to(0, 0)
+                        print("before:",flying_height)
+                        pc.go_to(0, 0)
+                        print("after:",flying_height)
+                        pc.go_to(0, -SIDE_LENGTH)
+                        pc.go_to(SIDE_LENGTH, -SIDE_LENGTH)   
+                        pc.go_to(SIDE_LENGTH, 0)
+                        pc.go_to(0, 0)
                         print(pc.get_position())
                         flying_height += 0.1
                         up_times_real += 1
-                    pc.land()
+                    print('done')
+                    
 
     def connected(self, URI):
         LOGGER.info('Connected with {}'.format(URI))

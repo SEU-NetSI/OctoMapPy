@@ -54,22 +54,23 @@ OFFSETX=math.pow(2, TREE_MAX_DEPTH) / 2
 OFFSETY=math.pow(2, TREE_MAX_DEPTH) / 2
 OFFSETZ=math.pow(2, TREE_MAX_DEPTH) / 2
 INDICE_LENGTH= int(math.pow(2, TREE_MAX_DEPTH))
-
+SHOW_ANIMATION_BUILDING = True
+SAVE_IMAGE = False
 """
 Path Plan based on RRT.
 GOAL_SAMPLE_RATE: the probability of picking the target point.
 EXPAND_STEP: step size per growth.
-SHOW_ANIMATION: animation effect for RRT algorithm display.
+SHOW_ANIMATION_RRT: animation effect for RRT algorithm display.
 """
 GOAL_SAMPLE_RATE=0.05
 EXPAND_STEP=2
-SHOW_ANIMATION=True
+SHOW_ANIMATION_RRT=True
 
 """
 Flying experiment used for testing and SLAM without autonomous path planning.
 """
-OBSTACLE_HEIGHT = 0.4
-TAKEOFF_HEIGHT = 0.3
+OBSTACLE_HEIGHT = 0.5
+TAKEOFF_HEIGHT = 0.4
 SIDE_LENGTH = 1.0
 FLIGHT_SPEED = 0.1
 """

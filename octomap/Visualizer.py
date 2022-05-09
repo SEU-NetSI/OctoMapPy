@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import os
 
-from Config import LOGGER, OFFSETX, OFFSETY, OFFSETZ,INDICE_LENGTH
+from Config import LOGGER, OFFSETX, OFFSETY, OFFSETZ,INDICE_LENGTH,SAVE_IMAGE,SHOW_ANIMATION_BUILDING
 from OctoNode import OctoNode
 
 
@@ -89,25 +89,24 @@ class Visualizer:
             colors = np.empty(voxel_container.shape, dtype=object)
             colors[voxel_container] = 'red'
             ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
-
-
-        # plt.savefig('./map.jpg', dpi=1200)
-
+ 
 
 def main():
     visualizer = Visualizer()
     visualizer.visualize()
     loop_counter = 0
     plt.ion()
-    
-    while True:
-        visualizer.visualize()
-        loop_counter += 1
-        print("Refresh " + str(loop_counter) + " times...")
-        plt.pause(0.1)
-
-    plt.ioff()
-    plt.show()
+    if SHOW_ANIMATION_BUILDING:
+        while True:
+            visualizer.visualize()
+            loop_counter += 1
+            print("Refresh " + str(loop_counter) + " times...")
+            plt.pause(0.1)
+        plt.ioff()
+    else: 
+        plt.show()
+    if SAVE_IMAGE:
+        plt.savefig('./map.jpg', dpi=1200)
 
 
 if __name__ == "__main__":

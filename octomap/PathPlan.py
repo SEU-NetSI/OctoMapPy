@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 import pandas as pd
-from Config import GOAL_SAMPLE_RATE, EXPAND_STEP, OFFSETX, OFFSETY, OFFSETZ,SHOW_ANIMATION,INDICE_LENGTH
+from Config import GOAL_SAMPLE_RATE, EXPAND_STEP, OFFSETX, OFFSETY, OFFSETZ,SHOW_ANIMATION_RRT,INDICE_LENGTH
 
 class Node:
     def __init__(self, value_x, value_y, value_z):
@@ -113,7 +113,7 @@ class PathPlan:
                           (new_node.value_z - self.end.value_z) **2)
             if d <= EXPAND_STEP:
                 break
-            if SHOW_ANIMATION:
+            if SHOW_ANIMATION_RRT:
                 self.draw_dynamic_graph(random_new_node)
 
         path = [(self.end.value_x, self.end.value_y, self.end.value_z)]
