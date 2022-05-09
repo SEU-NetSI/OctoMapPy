@@ -15,9 +15,9 @@ The probability threshold for occupany and free.
 If there is not threshold, the status change will be very hard and not in time. 
 When the probability of the voxel is arrived at the threshold, it indicates the voxel has been set occupied/free status.
 """
-OCCUPANY_LOGODDS=2.5
+OCCUPANY_LOGODDS=0.85
 OCCUPANY_PROBABILITY=0.97
-FREE_LOGODDS=-2
+FREE_LOGODDS=-0.4
 FREE_PROBABILITY=0.12
 
 """
@@ -69,9 +69,9 @@ SHOW_ANIMATION_RRT=True
 """
 Flying experiment used for testing and SLAM without autonomous path planning.
 """
-OBSTACLE_HEIGHT = 0.5
-TAKEOFF_HEIGHT = 0.4
-SIDE_LENGTH = 1.0
+OBSTACLE_HEIGHT = 0.4
+TAKEOFF_HEIGHT = 0.3
+SIDE_LENGTH = 0.8
 FLIGHT_SPEED = 0.1
 """
 Global logger.
