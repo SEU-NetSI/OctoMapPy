@@ -33,8 +33,8 @@ TREE_MAX_DEPTH: the recursion of the tree.
 WIDTH: the width of the experimental scene.
 So, the size of the OctoTree is TREE_RESOLUTION * 2^TREE_MAX_DEPTH.
 """
-TREE_RESOLUTION=10
-TREE_MAX_DEPTH=5
+TREE_RESOLUTION=4
+TREE_MAX_DEPTH=6
 TREE_CENTER=(0, 0, 0)
 WIDTH=TREE_RESOLUTION * math.pow(2, TREE_MAX_DEPTH)
 
@@ -56,6 +56,7 @@ OFFSETZ=math.pow(2, TREE_MAX_DEPTH) / 2
 INDICE_LENGTH= int(math.pow(2, TREE_MAX_DEPTH))
 SHOW_ANIMATION_BUILDING = False
 SAVE_IMAGE = False
+READ_FLYING_DATA = True
 """
 Path Plan based on RRT.
 GOAL_SAMPLE_RATE: the probability of picking the target point.
@@ -74,7 +75,7 @@ TAKEOFF_HEIGHT = 0.3
 SIDE_LENGTH = 0.8
 FLIGHT_SPEED = 0.1
 SAVE_FLYING_DATA = True
-READ_FLYING_DATA = True
+
 """
 Global logger.
 """
