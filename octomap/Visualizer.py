@@ -4,9 +4,10 @@ import numpy as np
 import pandas as pd
 import os
 
-from Config import LOGGER, OFFSETX, OFFSETY, OFFSETZ,INDICE_LENGTH,SAVE_IMAGE,SHOW_ANIMATION_BUILDING
-from OctoNode import OctoNode
-
+from Config import OFFSETX, OFFSETY, OFFSETZ,INDICE_LENGTH,SAVE_IMAGE,SHOW_ANIMATION_BUILDING,READ_FLYING_DATA 
+from Config import TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION
+from OctoTree import OctoTree
+from MapUtil import get_classified_node_coor_list, get_classified_node_list, get_threshold_node_list
 
 class Visualizer:
     def __init__(self) -> None:
@@ -16,10 +17,23 @@ class Visualizer:
         """
         Visualize the occupied/free points
         """
-        occu_node_coor_list, free_node_coor_list = self.import_known_node()
+        if READ_FLYING_DATA:
+            leaf_node_list = self.read_flying_data()
+            threshold_node_list: list = get_threshold_node_list(leaf_node_list)
+            occu_node_list, free_node_list = get_classified_node_list(threshold_node_list)
+            occu_node_coor_list, free_node_coor_list = get_classified_node_coor_list(occu_node_list, free_node_list)
+        else:
+            occu_node_coor_list, free_node_coor_list = self.import_known_node()
         self.show(occu_node_coor_list, free_node_coor_list, self.fig)
         print("length - occu_node_coor_list: ", len(occu_node_coor_list))
         print("length - free_node_coor_list: ", len(free_node_coor_list))
+
+    def read_flying_data(self):
+        sheet_start_points,sheet_end_points = self.import_flying_data()
+        self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
+        for index in range(len(sheet_start_points)):
+            self.octotree.ray_casting(sheet_start_points[index], sheet_end_points[index])
+        return self.octotree.get_leaf_node_list
 
     def import_known_node(self):
         occu_node_coor_list = []
@@ -34,6 +48,19 @@ class Visualizer:
                                  usecols=(0, 1, 2), skiprows=0)
         free_node_coor_list= list(map(tuple,free_nodes.values))
         return occu_node_coor_list, free_node_coor_list
+
+    def import_flying_data(self):
+        start_points = []
+        end_points = []
+        filename="flying_data.xls"
+        start_points_data=pd.read_excel( filename, sheet_name="start_points",
+                                 usecols=(0, 1, 2), skiprows=0)
+        
+        start_points = list(map(tuple,start_points_data.values))
+        end_points_data=pd.read_excel( filename, sheet_name="end_points",
+                                 usecols=(0, 1, 2), skiprows=0)
+        end_points= list(map(tuple,end_points_data.values))
+        return start_points, end_points
 
 
     def show(self, occu_node_coor_list, free_node_coor_list, fig):
@@ -95,9 +122,10 @@ def main():
     visualizer = Visualizer()
     visualizer.visualize()
     loop_counter = 0
-    plt.ion()
+    
     if SHOW_ANIMATION_BUILDING:
-        while True:
+        plt.ion()
+        while True: 
             visualizer.visualize()
             loop_counter += 1
             print("Refresh " + str(loop_counter) + " times...")
