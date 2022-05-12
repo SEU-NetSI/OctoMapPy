@@ -2,6 +2,7 @@ import math
 from datetime import datetime
 
 import numpy as np
+import pandas as pd
 import xlwt
 from cflib.crazyflie.log import LogConfig
 
@@ -189,34 +190,18 @@ def export_known_voxel(leaf_node_list):
     LOGGER.info("length of occu_node_coor_list: {}".format(len(occu_node_coor_list)))
     LOGGER.info("length of free_node_coor_list: {}".format(len(free_node_coor_list)))   
 
-    # Output points to xls file
-    workbook = xlwt.Workbook(encoding='utf-8')
-    sheet_occu_node = workbook.add_sheet('occu_node_coor_list')
-    sheet_free_node = workbook.add_sheet('free_node_coor_list')
+    # Output points to csv 
     value = datetime.today()
     date_value = datetime.strftime(value,'%H:%M:%S')
-    sheet_occu_node.write(0, 0, label = 'x')
-    sheet_occu_node.write(0, 1, label = 'y')
-    sheet_occu_node.write(0, 2, label = 'z')
-    sheet_occu_node.write(0, 3, label = date_value)
-    sheet_occu_node.write(0, 4, label = len(occu_node_coor_list))
 
-    sheet_free_node.write(0, 0, label = 'x')
-    sheet_free_node.write(0, 1, label = 'y')
-    sheet_free_node.write(0, 2, label = 'z')
-    sheet_free_node.write(0, 3, label = date_value)
-    sheet_free_node.write(0, 4, label = len(free_node_coor_list))
+    label_occu = ('occu_node_coor_list', date_value,len(occu_node_coor_list))
+    occu_node_tempcsv = pd.DataFrame(columns=label_occu, data=occu_node_coor_list)
+    occu_node_tempcsv.to_csv('occu_node_coor_list.csv', encoding='gbk')
 
-    for i in range(len(occu_node_coor_list)):
-        sheet_occu_node.write(i + 1, 0, occu_node_coor_list[i][0])
-        sheet_occu_node.write(i + 1, 1, occu_node_coor_list[i][1])
-        sheet_occu_node.write(i + 1, 2, occu_node_coor_list[i][2])
-    for i in range(len(free_node_coor_list)):
-        sheet_free_node.write(i + 1, 0, free_node_coor_list[i][0])
-        sheet_free_node.write(i + 1, 1, free_node_coor_list[i][1])
-        sheet_free_node.write(i + 1, 2, free_node_coor_list[i][2])
-
-    workbook.save("./point_list.xls")
+    label_free = ('free_node_coor_list', date_value,len(free_node_coor_list))
+    free_node_tempcsv = pd.DataFrame(columns=label_free, data=free_node_coor_list)
+    free_node_tempcsv.to_csv('free_node_coor_list.csv', encoding='gbk')
+    
 
 def get_threshold_node_list(leaf_node_list):
     """

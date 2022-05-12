@@ -1,4 +1,5 @@
 import math
+import time
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -29,38 +30,37 @@ class Visualizer:
         print("length - free_node_coor_list: ", len(free_node_coor_list))
 
     def read_flying_data(self):
+        start_time = time.time()
         sheet_start_points,sheet_end_points = self.import_flying_data()
         self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
         for index in range(len(sheet_end_points)):
-            self.octotree.ray_casting(sheet_start_points[index], sheet_end_points[index])
+            self.octotree.ray_casting(tuple(sheet_start_points[index]), tuple(sheet_end_points[index]))
+        end_time = time.time()
+        print('Running time: %s s' % ((end_time - start_time)))
         return self.octotree.get_leaf_node_list()
-
+        
     def import_known_node(self):
         occu_node_coor_list = []
         free_node_coor_list = []
         # TODO: read csv
-        filename="point_list.xls"
-        occu_nodes=pd.read_excel( filename, sheet_name="occu_node_coor_list",
-                                 usecols=(0, 1, 2), skiprows=0)
         
-        occu_node_coor_list = list(map(tuple,occu_nodes.values))
-        free_nodes=pd.read_excel( filename, sheet_name="free_node_coor_list",
-                                 usecols=(0, 1, 2), skiprows=0)
-        free_node_coor_list= list(map(tuple,free_nodes.values))
+        occu_nodes=pd.read_csv('occu_node_coor_list.csv', index_col=0)
+        occu_node_coor_list = occu_nodes.values.tolist()
+
+        free_nodes=pd.read_csv('free_node_coor_list.csv', index_col=0)
+        free_node_coor_list= free_nodes.values.tolist()
         return occu_node_coor_list, free_node_coor_list
 
     def import_flying_data(self):
-        start_points = []
-        end_points = []
-        filename="flying_data.xls"
-        start_points_data=pd.read_excel( filename, sheet_name="start_points",
-                                 usecols=(0, 1, 2), skiprows=0)
+        start_points_list = []
+        end_points_list = []
         
-        start_points = list(map(tuple,start_points_data.values))
-        end_points_data=pd.read_excel( filename, sheet_name="end_points",
-                                 usecols=(0, 1, 2), skiprows=0)
-        end_points= list(map(tuple,end_points_data.values))
-        return start_points, end_points
+        start_points=pd.read_csv('start_points.csv', index_col=0)
+        start_points_list = start_points.values.tolist()
+
+        end_points=pd.read_csv('end_points.csv', index_col=0)
+        end_points_list= end_points.values.tolist()
+        return start_points_list, end_points_list
 
 
     def show(self, occu_node_coor_list, free_node_coor_list, fig):

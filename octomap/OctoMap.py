@@ -82,41 +82,25 @@ class OctoMap:
         LOGGER.info('Disconnected with {}'.format(URI))
 
     def export_flying_data(self,start_points,end_points):
-        workbook = xlwt.Workbook(encoding='utf-8')
-        sheet_start_points = workbook.add_sheet('start_points')
-        sheet_end_points = workbook.add_sheet('end_points')
         value = datetime.today()
         date_value = datetime.strftime(value,'%H:%M:%S')
-        sheet_start_points.write(0, 0, label = 'x')
-        sheet_start_points.write(0, 1, label = 'y')
-        sheet_start_points.write(0, 2, label = 'z')
-        sheet_start_points.write(0, 3, label = date_value)
-        sheet_start_points.write(0, 4, label = len(start_points))
 
-        sheet_end_points.write(0, 0, label = 'x')
-        sheet_end_points.write(0, 1, label = 'y')
-        sheet_end_points.write(0, 2, label = 'z')
-        sheet_end_points.write(0, 3, label = date_value)
-        sheet_end_points.write(0, 4, label = len(end_points))
+        label_start_points = ('start_points', date_value,len(start_points))
+        start_points_tempcsv = pd.DataFrame(columns=label_start_points, data=start_points)
+        start_points_tempcsv.to_csv('start_points.csv', encoding='gbk')
 
-        for i in range(len(start_points)):
-            for j in range(4):
-                sheet_start_points.write(i * 4 + j + 1, 0, start_points[i][0])
-                sheet_start_points.write(i * 4 + j + 1, 1, start_points[i][1])
-                sheet_start_points.write(i * 4 + j + 1, 2, start_points[i][2])
-        for i in range(len(end_points)):
-            sheet_end_points.write(i + 1, 0, end_points[i][0])
-            sheet_end_points.write(i + 1, 1, end_points[i][1])
-            sheet_end_points.write(i + 1, 2, end_points[i][2])
-
-        workbook.save("./flying_data.xls")
+        label_end_points = ('end_points', date_value,len(end_points))
+        end_points_tempcsv = pd.DataFrame(columns=label_end_points, data=end_points)
+        end_points_tempcsv.to_csv('end_points.csv', encoding='gbk')
+       
 
 
     def update_map(self, timestamp, data, logconf):
         
         # start_time = time.time()
         measurement, start_point = parse_log_data(data)
-        self.start_points_data.append(tuple(start_point))
+        for i in range(4):
+            self.start_points_data.append(tuple(start_point))
         end_points = get_end_point(start_point, measurement)
         self.end_points_data.extend(end_points)
         if SAVE_FLYING_DATA:
