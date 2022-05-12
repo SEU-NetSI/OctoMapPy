@@ -81,7 +81,7 @@ class OctoMap:
     def disconnected(self, URI):
         LOGGER.info('Disconnected with {}'.format(URI))
 
-    def export_flying_data(start_points,end_points):
+    def export_flying_data(self,start_points,end_points):
         workbook = xlwt.Workbook(encoding='utf-8')
         sheet_start_points = workbook.add_sheet('start_points')
         sheet_end_points = workbook.add_sheet('end_points')

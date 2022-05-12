@@ -31,9 +31,9 @@ class Visualizer:
     def read_flying_data(self):
         sheet_start_points,sheet_end_points = self.import_flying_data()
         self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
-        for index in range(len(sheet_start_points)):
+        for index in range(len(sheet_end_points)):
             self.octotree.ray_casting(sheet_start_points[index], sheet_end_points[index])
-        return self.octotree.get_leaf_node_list
+        return self.octotree.get_leaf_node_list()
 
     def import_known_node(self):
         occu_node_coor_list = []
