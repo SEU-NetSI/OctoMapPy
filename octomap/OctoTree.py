@@ -85,7 +85,7 @@ class OctoTree:
         if len(start_point) != 3 or len(end_point) != 3:
             raise ValueError("Point should be tuple (x,y,z)")
         
-        # Insert occupany voxel
+        # Insert occupancy voxel
         self.insert_point(end_point)
         # Insert free voxel
         grid_path: list = bresenham3D(start_point, end_point)
