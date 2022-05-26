@@ -20,18 +20,15 @@ class PathPlan:
 
     def import_known_free_node(self):
         free_node_coor_list = []
-        filename="point_list.xls"
-        free_nodes=pd.read_excel( filename, sheet_name="free_node_coor_list",
-                                 usecols=(0, 1, 2), skiprows=0)
-        free_node_coor_list= list(map(tuple,free_nodes.values))
+
+        free_nodes=pd.read_csv('free_node_coor_list.csv', index_col=0)
+        free_node_coor_list= free_nodes.values.tolist()
         return free_node_coor_list
 
     def import_known_occu_node(self):
         occu_node_coor_list = []
-        filename="point_list.xls"
-        occu_nodes=pd.read_excel( filename, sheet_name="occu_node_coor_list",
-                                 usecols=(0, 1, 2), skiprows=0)
-        occu_node_coor_list = list(map(tuple,occu_nodes.values))
+        occu_nodes=pd.read_csv('occu_node_coor_list.csv', index_col=0)
+        occu_node_coor_list = occu_nodes.values.tolist()
         return occu_node_coor_list
 
     def random_node(self):
@@ -102,7 +99,7 @@ class PathPlan:
             new_node.parent = min_index
 
             if not self.collision_check(new_node):
-                print("Wrong parameter,unable to plan path!!!")
+                # print("Wrong parameter,unable to plan path!!!")
                 continue
 
             self.node_list.append(new_node)
@@ -120,7 +117,7 @@ class PathPlan:
         last_index = len(self.node_list) - 1
         while self.node_list[last_index].parent is not None:
             node = self.node_list[last_index]
-            path.append((node.value_x, node.value_y,node.value_z))
+            path.append((int(node.value_x), int(node.value_y),int(node.value_z)))
             last_index = node.parent
         path.append((self.start.value_x, self.start.value_y, self.start.value_z))
 
@@ -207,5 +204,7 @@ class PathPlan:
         ax.plot([data[0]+OFFSETX for data in path],
                 [data[1]+OFFSETY for data in path], 
                 [data[2]+OFFSETZ for data in path], '-r')
+        ax.plot(self.start.value_x+OFFSETX, self.start.value_y+OFFSETY, self.start.value_z+OFFSETZ, "^r")
+        ax.plot(self.end.value_x+OFFSETX, self.end.value_y+OFFSETY, self.end.value_z+OFFSETZ, "^b")
         plt.grid(True)
         plt.show()

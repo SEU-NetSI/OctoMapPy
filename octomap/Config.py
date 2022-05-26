@@ -11,12 +11,12 @@ MISS_LOGODDS=-0.4
 MISS_PROBABILITY=0.4
 
 """
-The probability threshold for occupany and free.
+The probability threshold for occupancy and free.
 If there is not threshold, the status change will be very hard and not in time. 
 When the probability of the voxel is arrived at the threshold, it indicates the voxel has been set occupied/free status.
 """
-OCCUPANY_LOGODDS=0.85
-OCCUPANY_PROBABILITY=0.97
+OCCUPANCY_LOGODDS=0.85
+OCCUPANCY_PROBABILITY=0.97
 FREE_LOGODDS=-0.4
 FREE_PROBABILITY=0.12
 
@@ -64,8 +64,8 @@ EXPAND_STEP: step size per growth.
 SHOW_ANIMATION_RRT: animation effect for RRT algorithm display.
 """
 GOAL_SAMPLE_RATE=0.05
-EXPAND_STEP=2
-SHOW_ANIMATION_RRT=True
+EXPAND_STEP=1
+SHOW_ANIMATION_RRT=False
 
 """
 Flying experiment used for testing and SLAM without autonomous path planning.

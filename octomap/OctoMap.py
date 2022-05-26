@@ -19,7 +19,7 @@ from MapUtil import get_log_config, parse_log_data, get_end_point
 class OctoMap:
     def __init__(self):
         self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
-        self.path_planner = PathPlan()
+        # self.path_planner = PathPlan()
         self.counter = 0
         self.start_points_data = []
         self.end_points_data = []
@@ -118,7 +118,3 @@ class OctoMap:
         # end_time = time.time()
         # print('Running time: %s s' % ((end_time - start_time)))
     
-    #TODO: Random Search Path Planning
-    def plan_path(self, start_point=(0, 0, 0), end_point=(10, 10, 10)):
-        path: list = self.path_planner.planning(start_point, end_point)
-        return path

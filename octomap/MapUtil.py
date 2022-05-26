@@ -6,7 +6,7 @@ import pandas as pd
 import xlwt
 from cflib.crazyflie.log import LogConfig
 
-from Config import SENSOR_TH, WIDTH, FREE_LOGODDS, LOGGER, OCCUPANY_LOGODDS, TREE_RESOLUTION
+from Config import SENSOR_TH, WIDTH, FREE_LOGODDS, LOGGER, OCCUPANCY_LOGODDS, TREE_RESOLUTION
 
 
 """
@@ -209,7 +209,7 @@ def get_threshold_node_list(leaf_node_list):
     """
     threshold_node_list = []
     for node in leaf_node_list:
-        if node.get_log_odds() == OCCUPANY_LOGODDS or node.get_log_odds() == FREE_LOGODDS:
+        if node.get_log_odds() == OCCUPANCY_LOGODDS or node.get_log_odds() == FREE_LOGODDS:
             threshold_node_list.append(node)
     return threshold_node_list
 
@@ -221,7 +221,7 @@ def get_classified_node_list(threshold_node_list):
     free_node_list: list = []
 
     for node in threshold_node_list:
-        if node.get_log_odds() == OCCUPANY_LOGODDS:
+        if node.get_log_odds() == OCCUPANCY_LOGODDS:
             occu_node_list.append(node)
         if node.get_log_odds() == FREE_LOGODDS:
             free_node_list.append(node)

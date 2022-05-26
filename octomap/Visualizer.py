@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import os
+from PathPlan import PathPlan
 
 from Config import OFFSETX, OFFSETY, OFFSETZ,INDICE_LENGTH,SAVE_IMAGE,SHOW_ANIMATION_BUILDING,READ_FLYING_DATA 
 from Config import TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION
@@ -13,6 +14,15 @@ from MapUtil import get_classified_node_coor_list, get_classified_node_list, get
 class Visualizer:
     def __init__(self) -> None:
         self.fig = plt.figure(figsize=(7,7))
+        self.path_planner = PathPlan()
+
+    def plan_path(self, start_point=(-5, -5, 0), end_point=(10, 15, 0)):
+        path: list = self.path_planner.planning(start_point, end_point)
+        print(path)
+        return path
+
+    def visual_path(self,path):
+        self.path_planner.draw_static_graph(path)
 
     def visualize(self):
         """
@@ -135,7 +145,8 @@ def main():
         plt.show()
     if SAVE_IMAGE:
         plt.savefig('./map.jpg', dpi=1200)
-
+    flying_path = visualizer.plan_path()
+    visualizer.visual_path(flying_path)
 
 if __name__ == "__main__":
     main()
