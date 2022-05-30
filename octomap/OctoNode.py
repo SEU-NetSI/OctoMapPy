@@ -1,5 +1,6 @@
 import math
 from Config import LOGGER, DEFAULT_LOGODDS, OCCUPANCY_LOGODDS, FREE_LOGODDS
+from octomap.Config import HIT_LOGODDS, MISS_LOGODDS
 
 
 class OctoNode:
@@ -123,12 +124,32 @@ class OctoNode:
             try:
                 child_index: int = self.index(point, origin, width)
                 self._children[child_index].update(point, diff_logodds, self.cal_origin(child_index, origin, width), 
-                                                width / 2, max_depth - 1)                
+                                                width / 2, max_depth - 1)         
+                # TODO: need test (prune)
+                if self._check_children_logodds():
+                    self._log_odds = self._children[0].get_log_odds()
+                    self._children = ()
+                    self._is_leaf = True
             except ValueError as e:
                 pass
                 # LOGGER.error(e)
                 # LOGGER.error(point)
 
+    def _check_children_logodds(self):
+        """
+        Returns:
+            whether the logodds of all children are the same and arrive thresholds --- bool
+        """
+        if self.has_children():
+            log_odds = self._children[0].get_log_odds()
+            if log_odds != HIT_LOGODDS and log_odds != MISS_LOGODDS:
+                return False
+            for child in self._children:
+                if child.get_log_odds() != log_odds:
+                    return False
+            return True
+        else:
+            return True
 
     def _update_logodds(self, diff_logodds):
         """
