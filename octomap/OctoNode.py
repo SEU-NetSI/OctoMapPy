@@ -1,6 +1,5 @@
 import math
 from Config import LOGGER, DEFAULT_LOGODDS, OCCUPANCY_LOGODDS, FREE_LOGODDS
-from octomap.Config import HIT_LOGODDS, MISS_LOGODDS
 
 
 class OctoNode:
@@ -142,7 +141,7 @@ class OctoNode:
         """
         if self.has_children():
             log_odds = self._children[0].get_log_odds()
-            if log_odds != HIT_LOGODDS and log_odds != MISS_LOGODDS:
+            if log_odds != FREE_LOGODDS and log_odds != OCCUPANCY_LOGODDS:
                 return False
             for child in self._children:
                 if child.get_log_odds() != log_odds:
