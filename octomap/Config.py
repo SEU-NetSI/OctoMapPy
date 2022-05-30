@@ -56,7 +56,7 @@ OFFSETZ=math.pow(2, TREE_MAX_DEPTH) / 2
 INDICE_LENGTH= int(math.pow(2, TREE_MAX_DEPTH))
 SHOW_ANIMATION_BUILDING = False
 SAVE_IMAGE = False
-READ_FLYING_DATA = True
+READ_FLYING_DATA = False
 """
 Path Plan based on RRT.
 GOAL_SAMPLE_RATE: the probability of picking the target point.

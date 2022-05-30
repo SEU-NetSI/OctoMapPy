@@ -5,7 +5,9 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 import pandas as pd
-from Config import GOAL_SAMPLE_RATE, EXPAND_STEP, OFFSETX, OFFSETY, OFFSETZ,SHOW_ANIMATION_RRT,INDICE_LENGTH
+from Config import GOAL_SAMPLE_RATE, EXPAND_STEP, OFFSETX, OFFSETY, OFFSETZ,SHOW_ANIMATION_RRT,INDICE_LENGTH, TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION
+from MapUtil import get_classified_node_coor_list, get_classified_node_list, get_threshold_node_list
+from OctoTree import OctoTree
 
 class Node:
     def __init__(self, value_x, value_y, value_z):
@@ -17,6 +19,7 @@ class Node:
 class PathPlan:
     def __init__(self):
         self.node_list = []
+
 
     def import_known_free_node(self):
         free_node_coor_list = []
@@ -120,7 +123,7 @@ class PathPlan:
             path.append((int(node.value_x), int(node.value_y),int(node.value_z)))
             last_index = node.parent
         path.append((self.start.value_x, self.start.value_y, self.start.value_z))
-
+        path.reverse()
         return path
     
     def draw_dynamic_graph(self, random_new_node=None):
@@ -147,9 +150,9 @@ class PathPlan:
         """
         Obstacle points represented by black squares
         """                
-        occu_node_coor_list = self.import_known_occu_node()
-        for (obstacle_x, obstacle_y, obstacle_z) in occu_node_coor_list:
-            ax.plot(obstacle_x+OFFSETX, obstacle_y+OFFSETY, obstacle_z+OFFSETZ, "sk", ms=10)
+        # occu_node_coor_list = self.import_known_occu_node()
+        # for (obstacle_x, obstacle_y, obstacle_z) in occu_node_coor_list:
+        #     ax.plot(obstacle_x+OFFSETX, obstacle_y+OFFSETY, obstacle_z+OFFSETZ, "sk", ms=10)
         """
         start_point is red, end_point is blue
         """
