@@ -16,7 +16,7 @@ class Node:
         self.value_z = value_z
         self.parent = None
 
-class PathPlan:
+class RrtPathPlan:
     def __init__(self):
         self.node_list = []
 

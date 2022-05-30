@@ -1,4 +1,3 @@
-import math
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
@@ -6,12 +5,11 @@ from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.position_hl_commander import PositionHlCommander
 import pandas as pd
 
-from Config import TREE_RESOLUTION, URI, LOGGER, WHETHER_FLY, TAKEOFF_HEIGHT, FLIGHT_SPEED
+from Config import TREE_RESOLUTION, URI, LOGGER, TAKEOFF_HEIGHT, FLIGHT_SPEED
 
-class RRT_Flying:
+class AutoFly:
     def __init__(self):
         pass
-    
 
     def start(self):
         cflib.crtp.init_drivers()
@@ -64,8 +62,7 @@ class RRT_Flying:
         LOGGER.info('Disconnected with {}'.format(URI))
 
 def main():
-    
-    flying = RRT_Flying()
+    flying = AutoFly()
     flying.start()
 
 if __name__=="__main__":
