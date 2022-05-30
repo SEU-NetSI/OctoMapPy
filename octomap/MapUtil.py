@@ -3,7 +3,6 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
-import xlwt
 from cflib.crazyflie.log import LogConfig
 
 from Config import SENSOR_TH, WIDTH, FREE_LOGODDS, LOGGER, OCCUPANCY_LOGODDS, TREE_RESOLUTION

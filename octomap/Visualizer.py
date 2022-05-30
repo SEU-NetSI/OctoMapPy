@@ -1,12 +1,10 @@
 from datetime import datetime
-import math
-import time
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import os
-from PathPlan import PathPlan
 
+from RrtPathPlan import RrtPathPlan
 from Config import OFFSETX, OFFSETY, OFFSETZ,INDICE_LENGTH,SAVE_IMAGE,SHOW_ANIMATION_BUILDING,READ_FLYING_DATA 
 from Config import TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION
 from OctoTree import OctoTree
@@ -15,7 +13,7 @@ from MapUtil import get_classified_node_coor_list, get_classified_node_list, get
 class Visualizer:
     def __init__(self) -> None:
         self.fig = plt.figure(figsize=(7,7))
-        self.path_planner = PathPlan()
+        self.path_planner = RrtPathPlan()
     
     def visualize(self):
         """
@@ -120,20 +118,20 @@ class Visualizer:
         scatter: The speed is fast but the observation effect is not ideal
         """
         # free space
-        # voxel_container = None
-        # for i in range(len(free_node_coor_list)):
-        #     free_voxel = (x >= free_node_coor_list[i][0] + OFFSETX) & (x < free_node_coor_list[i][0] + 1 + OFFSETX) \
-        #                 & (y >= free_node_coor_list[i][1] + OFFSETY) & (y < free_node_coor_list[i][1] + 1 + OFFSETY) \
-        #                 & (z >= free_node_coor_list[i][2] + OFFSETZ) & (z < free_node_coor_list[i][2] + 1 + OFFSETZ)
-        #     if voxel_container is not None:
-        #         voxel_container = np.logical_or(voxel_container, free_voxel)
-        #     else:
-        #         voxel_container = free_voxel
+        voxel_container = None
+        for i in range(len(free_node_coor_list)):
+            free_voxel = (x >= free_node_coor_list[i][0] + OFFSETX) & (x < free_node_coor_list[i][0] + 1 + OFFSETX) \
+                        & (y >= free_node_coor_list[i][1] + OFFSETY) & (y < free_node_coor_list[i][1] + 1 + OFFSETY) \
+                        & (z >= free_node_coor_list[i][2] + OFFSETZ) & (z < free_node_coor_list[i][2] + 1 + OFFSETZ)
+            if voxel_container is not None:
+                voxel_container = np.logical_or(voxel_container, free_voxel)
+            else:
+                voxel_container = free_voxel
 
-        # if voxel_container is not None:
-        #     colors = np.empty(voxel_container.shape, dtype=object)
-        #     colors[voxel_container] = 'green'
-        #     ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
+        if voxel_container is not None:
+            colors = np.empty(voxel_container.shape, dtype=object)
+            colors[voxel_container] = 'green'
+            ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
 
         # occupied space
         voxel_container = None

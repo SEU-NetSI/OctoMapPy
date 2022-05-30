@@ -1,5 +1,4 @@
 from datetime import datetime
-import time
 import math
 
 import cflib.crtp
@@ -7,19 +6,16 @@ from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.position_hl_commander import PositionHlCommander
 import pandas as pd
-import xlwt
 
 from Config import URI, LOGGER, TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION, WHETHER_FLY, OBSTACLE_HEIGHT, TAKEOFF_HEIGHT
-from Config import SIDE_LENGTH,FLIGHT_SPEED, SAVE_FLYING_DATA,SIDE_WIDTH
+from Config import SIDE_LENGTH, FLIGHT_SPEED, SAVE_FLYING_DATA,SIDE_WIDTH
 from OctoTree import OctoTree
-from PathPlan import PathPlan
 from MapUtil import get_log_config, parse_log_data, get_end_point
 
 
 class OctoMap:
     def __init__(self):
         self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
-        # self.path_planner = PathPlan()
         self.counter = 0
         self.start_points_data = []
         self.end_points_data = []
@@ -60,9 +56,8 @@ class OctoMap:
                                         default_velocity=FLIGHT_SPEED,
                                         controller=PositionHlCommander.CONTROLLER_PID) as pc:
                     
+                    # use designed path to build the map
                     flying_height = TAKEOFF_HEIGHT
-                    up_times_total = (OBSTACLE_HEIGHT - TAKEOFF_HEIGHT) * 10
-                    up_times_real = 0
                     pc.set_default_height(flying_height)
                     pc.go_to(0, 0)
                     pc.go_to(SIDE_WIDTH / 2, 0)
@@ -78,17 +73,6 @@ class OctoMap:
                     pc.go_to(SIDE_WIDTH / 2, -SIDE_WIDTH / 2)
                     pc.go_to(SIDE_WIDTH / 2, 0)
 
-                    
-                    # while up_times_real <= up_times_total:
-                    #     pc.set_default_height(flying_height)
-                    #     pc.go_to(0, 0)
-                    #     pc.go_to(0, -SIDE_LENGTH)
-                    #     pc.go_to(SIDE_WIDTH, -SIDE_LENGTH)   
-                    #     pc.go_to(SIDE_WIDTH, 0)
-                    #     pc.go_to(0, 0)
-                    #     print(pc.get_position())
-                    #     flying_height += 0.1
-                    #     up_times_real += 1
                     print('done')
                     
 
@@ -110,10 +94,7 @@ class OctoMap:
         end_points_tempcsv = pd.DataFrame(columns=label_end_points, data=end_points)
         end_points_tempcsv.to_csv('end_points.csv', encoding='gbk')
        
-
-
     def update_map(self, timestamp, data, logconf):
-        
         # start_time = time.time()
         measurement, start_point = parse_log_data(data)
         for i in range(4):

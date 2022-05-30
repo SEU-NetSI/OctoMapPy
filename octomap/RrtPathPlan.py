@@ -5,9 +5,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 import pandas as pd
-from Config import GOAL_SAMPLE_RATE, EXPAND_STEP, OFFSETX, OFFSETY, OFFSETZ,SHOW_ANIMATION_RRT,INDICE_LENGTH, TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION
-from MapUtil import get_classified_node_coor_list, get_classified_node_list, get_threshold_node_list
-from OctoTree import OctoTree
+from Config import GOAL_SAMPLE_RATE, EXPAND_STEP, OFFSETX, OFFSETY, OFFSETZ,SHOW_ANIMATION_RRT,INDICE_LENGTH
 
 class Node:
     def __init__(self, value_x, value_y, value_z):
