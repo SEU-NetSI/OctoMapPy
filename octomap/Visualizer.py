@@ -120,20 +120,20 @@ class Visualizer:
         scatter: The speed is fast but the observation effect is not ideal
         """
         # free space
-        # voxel_container = None
-        # for i in range(len(free_node_coor_list)):
-        #     free_voxel = (x >= free_node_coor_list[i][0] + OFFSETX) & (x < free_node_coor_list[i][0] + 1 + OFFSETX) \
-        #                 & (y >= free_node_coor_list[i][1] + OFFSETY) & (y < free_node_coor_list[i][1] + 1 + OFFSETY) \
-        #                 & (z >= free_node_coor_list[i][2] + OFFSETZ) & (z < free_node_coor_list[i][2] + 1 + OFFSETZ)
-        #     if voxel_container is not None:
-        #         voxel_container = np.logical_or(voxel_container, free_voxel)
-        #     else:
-        #         voxel_container = free_voxel
+        voxel_container = None
+        for i in range(len(free_node_coor_list)):
+            free_voxel = (x >= free_node_coor_list[i][0] + OFFSETX) & (x < free_node_coor_list[i][0] + 1 + OFFSETX) \
+                        & (y >= free_node_coor_list[i][1] + OFFSETY) & (y < free_node_coor_list[i][1] + 1 + OFFSETY) \
+                        & (z >= free_node_coor_list[i][2] + OFFSETZ) & (z < free_node_coor_list[i][2] + 1 + OFFSETZ)
+            if voxel_container is not None:
+                voxel_container = np.logical_or(voxel_container, free_voxel)
+            else:
+                voxel_container = free_voxel
 
-        # if voxel_container is not None:
-        #     colors = np.empty(voxel_container.shape, dtype=object)
-        #     colors[voxel_container] = 'green'
-        #     ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
+        if voxel_container is not None:
+            colors = np.empty(voxel_container.shape, dtype=object)
+            colors[voxel_container] = 'green'
+            ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
 
         # occupied space
         voxel_container = None

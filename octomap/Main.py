@@ -21,14 +21,16 @@ def task_interaction():
     pass
 
 def main():
-    queue = Queue()
-    p_octomap = Process(target=task_octomap, args=queue)
-    p_interaction = Process(target=task_interaction, args=queue)
+    # queue = Queue()
+    # p_octomap = Process(target=task_octomap, args=queue)
+    # p_interaction = Process(target=task_interaction, args=queue)
 
-    p_octomap.start()
-    # p_interaction.start()
-    p_octomap.join()
-    # p_interaction.join()
+    # p_octomap.start()
+    # # p_interaction.start()
+    # p_octomap.join()
+    # # p_interaction.join()
+    octomap = OctoMap()
+    octomap.start()
 
 if __name__=="__main__":
     main()

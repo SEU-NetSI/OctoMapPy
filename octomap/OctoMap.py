@@ -10,7 +10,7 @@ import pandas as pd
 import xlwt
 
 from Config import URI, LOGGER, TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION, WHETHER_FLY, OBSTACLE_HEIGHT, TAKEOFF_HEIGHT
-from Config import SIDE_LENGTH,FLIGHT_SPEED, SAVE_FLYING_DATA
+from Config import SIDE_LENGTH,FLIGHT_SPEED, SAVE_FLYING_DATA,SIDE_WIDTH
 from OctoTree import OctoTree
 from PathPlan import PathPlan
 from MapUtil import get_log_config, parse_log_data, get_end_point
@@ -67,8 +67,8 @@ class OctoMap:
                         pc.set_default_height(flying_height)
                         pc.go_to(0, 0)
                         pc.go_to(0, -SIDE_LENGTH)
-                        pc.go_to(SIDE_LENGTH, -SIDE_LENGTH)   
-                        pc.go_to(SIDE_LENGTH, 0)
+                        pc.go_to(SIDE_WIDTH, -SIDE_LENGTH)   
+                        pc.go_to(SIDE_WIDTH, 0)
                         pc.go_to(0, 0)
                         print(pc.get_position())
                         flying_height += 0.1
