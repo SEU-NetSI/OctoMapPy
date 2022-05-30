@@ -73,7 +73,7 @@ Flying experiment used for testing and SLAM without autonomous path planning.
 OBSTACLE_HEIGHT = 0.4
 TAKEOFF_HEIGHT = 0.3
 SIDE_LENGTH = 1.5
-SIDE_WIDTH = 1.0
+SIDE_WIDTH = 1.5
 FLIGHT_SPEED = 0.1
 SAVE_FLYING_DATA = True
 

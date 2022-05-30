@@ -63,16 +63,32 @@ class OctoMap:
                     flying_height = TAKEOFF_HEIGHT
                     up_times_total = (OBSTACLE_HEIGHT - TAKEOFF_HEIGHT) * 10
                     up_times_real = 0
-                    while up_times_real <= up_times_total:
-                        pc.set_default_height(flying_height)
-                        pc.go_to(0, 0)
-                        pc.go_to(0, -SIDE_LENGTH)
-                        pc.go_to(SIDE_WIDTH, -SIDE_LENGTH)   
-                        pc.go_to(SIDE_WIDTH, 0)
-                        pc.go_to(0, 0)
-                        print(pc.get_position())
-                        flying_height += 0.1
-                        up_times_real += 1
+                    pc.set_default_height(flying_height)
+                    pc.go_to(0, 0)
+                    pc.go_to(SIDE_WIDTH / 2, 0)
+                    pc.go_to(SIDE_WIDTH / 2, SIDE_WIDTH / 2)
+                    pc.go_to(-SIDE_WIDTH / 2, SIDE_WIDTH / 2)
+                    pc.go_to(-SIDE_WIDTH / 2, -SIDE_WIDTH / 2)
+                    pc.go_to(SIDE_WIDTH / 2, -SIDE_WIDTH / 2)
+                    flying_height += 0.1
+                    pc.set_default_height(flying_height)
+                    pc.go_to(SIDE_WIDTH / 2, SIDE_WIDTH / 2)
+                    pc.go_to(-SIDE_WIDTH / 2, SIDE_WIDTH / 2)
+                    pc.go_to(-SIDE_WIDTH / 2, -SIDE_WIDTH / 2)
+                    pc.go_to(SIDE_WIDTH / 2, -SIDE_WIDTH / 2)
+                    pc.go_to(SIDE_WIDTH / 2, 0)
+
+                    
+                    # while up_times_real <= up_times_total:
+                    #     pc.set_default_height(flying_height)
+                    #     pc.go_to(0, 0)
+                    #     pc.go_to(0, -SIDE_LENGTH)
+                    #     pc.go_to(SIDE_WIDTH, -SIDE_LENGTH)   
+                    #     pc.go_to(SIDE_WIDTH, 0)
+                    #     pc.go_to(0, 0)
+                    #     print(pc.get_position())
+                    #     flying_height += 0.1
+                    #     up_times_real += 1
                     print('done')
                     
 
@@ -113,7 +129,7 @@ class OctoMap:
         self.counter += 1
         # TODO: new a thread to export
         if self.counter % 100 == 0:
-            self.octotree.export_known_voxel()
+            self.octotree.export_known_voxel(self.counter / 100)
         
         # end_time = time.time()
         # print('Running time: %s s' % ((end_time - start_time)))

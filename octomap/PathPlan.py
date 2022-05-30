@@ -24,13 +24,13 @@ class PathPlan:
     def import_known_free_node(self):
         free_node_coor_list = []
 
-        free_nodes=pd.read_csv('free_node_coor_list.csv', index_col=0)
+        free_nodes=pd.read_csv('free_node_coor_list13.0.csv', index_col=0)
         free_node_coor_list= free_nodes.values.tolist()
         return free_node_coor_list
 
     def import_known_occu_node(self):
         occu_node_coor_list = []
-        occu_nodes=pd.read_csv('occu_node_coor_list.csv', index_col=0)
+        occu_nodes=pd.read_csv('occu_node_coor_list13.0.csv', index_col=0)
         occu_node_coor_list = occu_nodes.values.tolist()
         return occu_node_coor_list
 
@@ -176,11 +176,11 @@ class PathPlan:
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_zlabel('z')
-        for node in self.node_list:
-            if node.parent is not None:
-                ax.plot([node.value_x+OFFSETX, self.node_list[node.parent].value_x+OFFSETX],
-                        [node.value_y+OFFSETY, self.node_list[node.parent].value_y+OFFSETY], 
-                        [node.value_z+OFFSETZ, self.node_list[node.parent].value_z+OFFSETZ], "-g")
+        # for node in self.node_list:
+        #     if node.parent is not None:
+        #         ax.plot([node.value_x+OFFSETX, self.node_list[node.parent].value_x+OFFSETX],
+        #                 [node.value_y+OFFSETY, self.node_list[node.parent].value_y+OFFSETY], 
+        #                 [node.value_z+OFFSETZ, self.node_list[node.parent].value_z+OFFSETZ], "-g")
 
         occu_node_coor_list = self.import_known_occu_node()
         x, y, z = np.indices((INDICE_LENGTH, INDICE_LENGTH, INDICE_LENGTH))

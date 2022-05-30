@@ -125,12 +125,12 @@ class OctoTree:
 
         return probability
         
-    def export_known_voxel(self):
+    def export_known_voxel(self,counter):
         """
         Export voxels whose logodds have been arrived at the threshold.
         """
         leaf_node_list: list = self.get_leaf_node_list()
-        export_known_voxel(leaf_node_list)
+        export_known_voxel(leaf_node_list,counter)
 
     def get_leaf_node_list(self):
         """

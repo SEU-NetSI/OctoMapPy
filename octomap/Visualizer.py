@@ -30,7 +30,7 @@ class Visualizer:
         print("length - occu_node_coor_list: ", len(occu_node_coor_list))
         print("length - free_node_coor_list: ", len(free_node_coor_list))
 
-    def plan_path(self, start_point=(0,0,8), end_point=(20,-20,8)):
+    def plan_path(self, start_point=(15,-15,9), end_point=(-15,15,9)):
         path: list = self.path_planner.planning(start_point, end_point)
         print(path)
         return path
@@ -52,10 +52,10 @@ class Visualizer:
         free_node_coor_list = []
         # TODO: read csv
         
-        occu_nodes=pd.read_csv('occu_node_coor_list.csv', index_col=0)
+        occu_nodes=pd.read_csv('occu_node_coor_list13.0.csv', index_col=0)
         occu_node_coor_list = occu_nodes.values.tolist()
 
-        free_nodes=pd.read_csv('free_node_coor_list.csv', index_col=0)
+        free_nodes=pd.read_csv('free_node_coor_list13.0.csv', index_col=0)
         free_node_coor_list= free_nodes.values.tolist()
         return occu_node_coor_list, free_node_coor_list
 
@@ -120,20 +120,20 @@ class Visualizer:
         scatter: The speed is fast but the observation effect is not ideal
         """
         # free space
-        voxel_container = None
-        for i in range(len(free_node_coor_list)):
-            free_voxel = (x >= free_node_coor_list[i][0] + OFFSETX) & (x < free_node_coor_list[i][0] + 1 + OFFSETX) \
-                        & (y >= free_node_coor_list[i][1] + OFFSETY) & (y < free_node_coor_list[i][1] + 1 + OFFSETY) \
-                        & (z >= free_node_coor_list[i][2] + OFFSETZ) & (z < free_node_coor_list[i][2] + 1 + OFFSETZ)
-            if voxel_container is not None:
-                voxel_container = np.logical_or(voxel_container, free_voxel)
-            else:
-                voxel_container = free_voxel
+        # voxel_container = None
+        # for i in range(len(free_node_coor_list)):
+        #     free_voxel = (x >= free_node_coor_list[i][0] + OFFSETX) & (x < free_node_coor_list[i][0] + 1 + OFFSETX) \
+        #                 & (y >= free_node_coor_list[i][1] + OFFSETY) & (y < free_node_coor_list[i][1] + 1 + OFFSETY) \
+        #                 & (z >= free_node_coor_list[i][2] + OFFSETZ) & (z < free_node_coor_list[i][2] + 1 + OFFSETZ)
+        #     if voxel_container is not None:
+        #         voxel_container = np.logical_or(voxel_container, free_voxel)
+        #     else:
+        #         voxel_container = free_voxel
 
-        if voxel_container is not None:
-            colors = np.empty(voxel_container.shape, dtype=object)
-            colors[voxel_container] = 'green'
-            ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
+        # if voxel_container is not None:
+        #     colors = np.empty(voxel_container.shape, dtype=object)
+        #     colors[voxel_container] = 'green'
+        #     ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
 
         # occupied space
         voxel_container = None

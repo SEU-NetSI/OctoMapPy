@@ -34,7 +34,7 @@ class RRT_Flying:
     def fly_path(self):
         fly_path = []
         RRT_path = self.import_rrt_path()
-        fly_path_temp = RRT_path[::2]
+        fly_path_temp = RRT_path[::5]
         for data in fly_path_temp:
             fly_path.append((data[0] * TREE_RESOLUTION / 100,
                              data[1] * TREE_RESOLUTION / 100,

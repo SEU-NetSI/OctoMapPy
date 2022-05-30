@@ -181,7 +181,7 @@ def bresenham3D(startPoint, endPoint):
             path.append(point)
     return path
 
-def export_known_voxel(leaf_node_list):
+def export_known_voxel(leaf_node_list,counter):
     LOGGER.info("leaf_node_list: {}".format(len(leaf_node_list)))
     threshold_node_list: list = get_threshold_node_list(leaf_node_list)
     LOGGER.info("threshold_node_list: {}".format(len(threshold_node_list)))
@@ -196,11 +196,11 @@ def export_known_voxel(leaf_node_list):
 
     label_occu = ('occu_node_coor_list', date_value,len(occu_node_coor_list))
     occu_node_tempcsv = pd.DataFrame(columns=label_occu, data=occu_node_coor_list)
-    occu_node_tempcsv.to_csv('occu_node_coor_list.csv', encoding='gbk')
+    occu_node_tempcsv.to_csv('occu_node_coor_list{}.csv'.format(counter), encoding='gbk')
 
     label_free = ('free_node_coor_list', date_value,len(free_node_coor_list))
     free_node_tempcsv = pd.DataFrame(columns=label_free, data=free_node_coor_list)
-    free_node_tempcsv.to_csv('free_node_coor_list.csv', encoding='gbk')
+    free_node_tempcsv.to_csv('free_node_coor_list{}.csv'.format(counter), encoding='gbk')
     
 
 def get_threshold_node_list(leaf_node_list):
