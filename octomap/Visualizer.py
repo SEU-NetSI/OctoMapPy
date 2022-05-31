@@ -1,128 +1,66 @@
-from datetime import datetime
-
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 from RrtPathPlan import RrtPathPlan
-from Config import OFFSETX, OFFSETY, OFFSETZ,INDICE_LENGTH,SAVE_IMAGE,SHOW_ANIMATION_BUILDING,READ_FLYING_DATA 
-from Config import TREE_CENTER, TREE_MAX_DEPTH, TREE_RESOLUTION
-from OctoTree import OctoTree
-from MapUtil import get_classified_node_coor_list, get_classified_node_list, get_threshold_node_list
+from Config import OFFSETX, OFFSETY, OFFSETZ,INDICE_LENGTH, SAVE_IMAGE, SHOW_ANIMATION_BUILDING, REGENERATE_BEFORE_VISUALIZE, SHOW_RRT_EXPLORATION
+from MapUtil import import_known_node, read_flying_data
 
 class Visualizer:
     def __init__(self) -> None:
-        self.fig = plt.figure(figsize=(7,7))
-        self.path_planner = RrtPathPlan()
-    
+        self.fig = plt.figure(figsize=(14, 6))
+       
     def visualize(self):
-        """
-        Visualize the occupied/free points
-        """
-        if READ_FLYING_DATA:
-            occu_node_coor_list, free_node_coor_list = self.read_flying_data()
-            self.export_flying_data()
+        self.set_known_node_list()
+        self.set_rrt_path()
+
+        self.visualize_octomap()
+        self.visualize_rrtpath()
+
+        if SHOW_ANIMATION_BUILDING:
+            loop_counter = 0
+            plt.ion()
+            while True:
+                plt.clf()
+                loop_counter += 1
+                print("Refresh " + str(loop_counter) + " times...")
+                plt.pause(0.1)
+            plt.ioff()
         else:
-            occu_node_coor_list, free_node_coor_list = self.import_known_node()
-        self.show(occu_node_coor_list, free_node_coor_list, self.fig)
-        print("length - occu_node_coor_list: ", len(occu_node_coor_list))
-        print("length - free_node_coor_list: ", len(free_node_coor_list))
-
-    def plan_path(self, start_point=(15,-15,9), end_point=(-15,15,9)):
-        path: list = self.path_planner.planning(start_point, end_point)
-        print(path)
-        return path
-
-    def visual_path(self,path):
-        self.path_planner.draw_static_graph(path)
-
-    def export_rrt_path(self):
-        rrt_path = self.plan_path()
-        value = datetime.today()
-        date_value = datetime.strftime(value,'%H:%M:%S')
-        label = ('rrt_path', date_value,len(rrt_path))
-        tempcsv = pd.DataFrame(columns=label, data=rrt_path)
-        tempcsv.to_csv('rrt_path.csv', encoding='gbk')
-        return rrt_path
-        
-    def import_known_node(self):
-        occu_node_coor_list = []
-        free_node_coor_list = []
-        # TODO: read csv
-        
-        occu_nodes=pd.read_csv('occu_node_coor_list13.0.csv', index_col=0)
-        occu_node_coor_list = occu_nodes.values.tolist()
-
-        free_nodes=pd.read_csv('free_node_coor_list13.0.csv', index_col=0)
-        free_node_coor_list= free_nodes.values.tolist()
-        return occu_node_coor_list, free_node_coor_list
-
-    def import_flying_data(self):
-        start_points_list = []
-        end_points_list = []
-        
-        start_points=pd.read_csv('start_points.csv', index_col=0)
-        start_points_list = start_points.values.tolist()
-
-        end_points=pd.read_csv('end_points.csv', index_col=0)
-        end_points_list= end_points.values.tolist()
-        return start_points_list, end_points_list
-
-    def read_flying_data(self):
-        # start_time = time.time()
-        sheet_start_points,sheet_end_points = self.import_flying_data()
-        self.octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
-        for index in range(len(sheet_end_points)):
-            self.octotree.ray_casting(tuple(sheet_start_points[index]), tuple(sheet_end_points[index]))
-        leaf_node_list = self.octotree.get_leaf_node_list()
-        threshold_node_list: list = get_threshold_node_list(leaf_node_list)
-        occu_node_list, free_node_list = get_classified_node_list(threshold_node_list)
-        occu_node_coor_list, free_node_coor_list = get_classified_node_coor_list(occu_node_list, free_node_list)
-        # end_time = time.time()
-        # print('Running time: %s s' % ((end_time - start_time)))
-        return occu_node_coor_list, free_node_coor_list
+            if SAVE_IMAGE:
+                plt.savefig('./octomap-rrtpath.jpg', dpi=1200)
+            else:
+                plt.show()
     
-    def export_flying_data(self):
-        occu_node_coor_list, free_node_coor_list = self.read_flying_data()
-        value = datetime.today()
-        date_value = datetime.strftime(value,'%H:%M:%S')
+    def set_known_node_list(self):
+        if REGENERATE_BEFORE_VISUALIZE:
+            self.occu_node_coor_list, self.free_node_coor_list = read_flying_data()
+        else:
+            self.occu_node_coor_list, self.free_node_coor_list = import_known_node()
 
-        label_occu = ('occu_node_coor_list', date_value,len(occu_node_coor_list))
-        occu_node_tempcsv = pd.DataFrame(columns=label_occu, data=occu_node_coor_list)
-        occu_node_tempcsv.to_csv('occu_node_coor_list.csv', encoding='gbk')
+        print("length - occu_node_coor_list: ", len(self.occu_node_coor_list))
+        print("length - free_node_coor_list: ", len(self.free_node_coor_list))
 
-        label_free = ('free_node_coor_list', date_value,len(free_node_coor_list))
-        free_node_tempcsv = pd.DataFrame(columns=label_free, data=free_node_coor_list)
-        free_node_tempcsv.to_csv('free_node_coor_list.csv', encoding='gbk')
+    def set_rrt_path(self):
+        self.path_planner = RrtPathPlan()
+        self.rrt_path = self.path_planner.export_rrt_path()
+        print("length - rrt_path: ", len(self.rrt_path))
 
-    def show(self, occu_node_coor_list, free_node_coor_list, fig):
+    def visualize_octomap(self):
         """
         Draw a 3D occupancy grid 
         """
-        plt.clf()
-        ax = self.fig.add_subplot(projection='3d')   
-        # x,y,z determined by the number of grids in that direction
-        x, y, z = np.indices((INDICE_LENGTH, INDICE_LENGTH, INDICE_LENGTH))
-
-        
-        # ax.set_xlim(-indice_length, indice_length)
-        # ax.set_ylim(-indice_length, indice_length)
-        # ax.set_zlim(-indice_length, indice_length)
+        ax = self.fig.add_subplot(121, projection='3d')
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_zlabel('z')
+        x, y, z = np.indices((INDICE_LENGTH, INDICE_LENGTH, INDICE_LENGTH))
 
-        """
-        Two ways to draw:
-        voxel: Better display but very slow
-        scatter: The speed is fast but the observation effect is not ideal
-        """
-        # free space
+        # show the free voxels
         voxel_container = None
-        for i in range(len(free_node_coor_list)):
-            free_voxel = (x >= free_node_coor_list[i][0] + OFFSETX) & (x < free_node_coor_list[i][0] + 1 + OFFSETX) \
-                        & (y >= free_node_coor_list[i][1] + OFFSETY) & (y < free_node_coor_list[i][1] + 1 + OFFSETY) \
-                        & (z >= free_node_coor_list[i][2] + OFFSETZ) & (z < free_node_coor_list[i][2] + 1 + OFFSETZ)
+        for i in range(len(self.free_node_coor_list)):
+            free_voxel = (x >= self.free_node_coor_list[i][0] + OFFSETX) & (x < self.free_node_coor_list[i][0] + 1 + OFFSETX) \
+                        & (y >= self.free_node_coor_list[i][1] + OFFSETY) & (y < self.free_node_coor_list[i][1] + 1 + OFFSETY) \
+                        & (z >= self.free_node_coor_list[i][2] + OFFSETZ) & (z < self.free_node_coor_list[i][2] + 1 + OFFSETZ)
             if voxel_container is not None:
                 voxel_container = np.logical_or(voxel_container, free_voxel)
             else:
@@ -133,12 +71,12 @@ class Visualizer:
             colors[voxel_container] = 'green'
             ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
 
-        # occupied space
+        # show the occupied voxels
         voxel_container = None
-        for i in range(len(occu_node_coor_list)):
-            occu_voxel = (x >= occu_node_coor_list[i][0] + OFFSETX) & (x < occu_node_coor_list[i][0] + 1 + OFFSETX) \
-                         & (y >= occu_node_coor_list[i][1] + OFFSETY) & (y < occu_node_coor_list[i][1] + 1 + OFFSETY) \
-                         & (z >= occu_node_coor_list[i][2] + OFFSETZ) & (z < occu_node_coor_list[i][2] + 1 + OFFSETZ)
+        for i in range(len(self.occu_node_coor_list)):
+            occu_voxel = (x >= self.occu_node_coor_list[i][0] + OFFSETX) & (x < self.occu_node_coor_list[i][0] + 1 + OFFSETX) \
+                         & (y >= self.occu_node_coor_list[i][1] + OFFSETY) & (y < self.occu_node_coor_list[i][1] + 1 + OFFSETY) \
+                         & (z >= self.occu_node_coor_list[i][2] + OFFSETZ) & (z < self.occu_node_coor_list[i][2] + 1 + OFFSETZ)
             if voxel_container is not None:
                 voxel_container = np.logical_or(voxel_container, occu_voxel)
             else:
@@ -148,27 +86,52 @@ class Visualizer:
             colors = np.empty(voxel_container.shape, dtype=object)
             colors[voxel_container] = 'red'
             ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
- 
+
+    def visualize_rrtpath(self):
+        """
+        Draw the RRT planning graph
+        """
+        ax = self.fig.add_subplot(122, projection='3d')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('z')
+
+        # show the green exploration path
+        if SHOW_RRT_EXPLORATION:
+            for node in self.path_planner.node_list:
+                if node.parent is not None:
+                    ax.plot([node.value_x+OFFSETX, self.path_planner.node_list[node.parent].value_x+OFFSETX],
+                            [node.value_y+OFFSETY, self.path_planner.node_list[node.parent].value_y+OFFSETY], 
+                            [node.value_z+OFFSETZ, self.path_planner.node_list[node.parent].value_z+OFFSETZ], "-g")
+
+        # show the occupied nodes
+        x, y, z = np.indices((INDICE_LENGTH, INDICE_LENGTH, INDICE_LENGTH))
+        voxel_container = None
+        for i in range(len(self.occu_node_coor_list)):
+            occu_voxel = (x >= self.occu_node_coor_list[i][0] + OFFSETX) & (x < self.occu_node_coor_list[i][0] + 1 + OFFSETX) \
+                         & (y >= self.occu_node_coor_list[i][1] + OFFSETY) & (y < self.occu_node_coor_list[i][1] + 1 + OFFSETY) \
+                         & (z >= self.occu_node_coor_list[i][2] + OFFSETZ) & (z < self.occu_node_coor_list[i][2] + 1 + OFFSETZ)
+            if voxel_container is not None:
+                voxel_container = np.logical_or(voxel_container, occu_voxel)
+            else:
+                voxel_container = occu_voxel
+        if voxel_container is not None:
+            colors = np.empty(voxel_container.shape, dtype=object)
+            colors[voxel_container] = 'black'
+            ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
+
+        # show the red planning path
+        ax.plot([data[0]+OFFSETX for data in self.rrt_path],
+                [data[1]+OFFSETY for data in self.rrt_path], 
+                [data[2]+OFFSETZ for data in self.rrt_path], '-r')
+
+        # show the blue start point and cyan end point
+        ax.plot(self.path_planner.start.value_x + OFFSETX, self.path_planner.start.value_y + OFFSETY, self.path_planner.start.value_z + OFFSETZ, "*b")
+        ax.plot(self.path_planner.end.value_x + OFFSETX, self.path_planner.end.value_y + OFFSETY, self.path_planner.end.value_z + OFFSETZ, "*c")
 
 def main():
     visualizer = Visualizer()
     visualizer.visualize()
-    loop_counter = 0
-    
-    if SHOW_ANIMATION_BUILDING:
-        plt.ion()
-        while True: 
-            visualizer.visualize()
-            loop_counter += 1
-            print("Refresh " + str(loop_counter) + " times...")
-            plt.pause(0.1)
-        plt.ioff()
-    else: 
-        plt.show()
-    if SAVE_IMAGE:
-        plt.savefig('./map.jpg', dpi=1200)
-    rrt_path = visualizer.export_rrt_path()
-    visualizer.visual_path(rrt_path)
 
 if __name__ == "__main__":
     main()

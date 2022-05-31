@@ -5,8 +5,7 @@ import numpy as np
 import pandas as pd
 from cflib.crazyflie.log import LogConfig
 
-from Config import SENSOR_TH, WIDTH, FREE_LOGODDS, LOGGER, OCCUPANCY_LOGODDS, TREE_RESOLUTION
-
+from Config import SENSOR_TH, WIDTH, FREE_LOGODDS, LOGGER, OCCUPANCY_LOGODDS, TREE_RESOLUTION, FILE_OCCU_NODE_LIST, FILE_FREE_NODE_LIST, TREE_CENTER, TREE_MAX_DEPTH
 
 """
 OctoMap
@@ -246,3 +245,62 @@ def get_classified_node_coor_list(occu_node_list, free_node_list):
         free_node_coor_list.append(node_coor)
 
     return occu_node_coor_list, free_node_coor_list
+
+
+"""
+Visualization
+"""
+def import_known_node():
+    return import_known_occu_node(), import_known_free_node()
+
+def import_known_free_node():
+    free_node_coor_list = []
+    free_nodes=pd.read_csv(FILE_FREE_NODE_LIST, index_col=0)
+    free_node_coor_list= free_nodes.values.tolist()
+    return free_node_coor_list
+
+def import_known_occu_node():
+    occu_node_coor_list = []
+    occu_nodes=pd.read_csv(FILE_OCCU_NODE_LIST, index_col=0)
+    occu_node_coor_list = occu_nodes.values.tolist()
+    return occu_node_coor_list
+
+def import_flying_data():
+    start_points_list = []
+    end_points_list = []
+    
+    start_points=pd.read_csv('start_points.csv', index_col=0)
+    start_points_list = start_points.values.tolist()
+
+    end_points=pd.read_csv('end_points.csv', index_col=0)
+    end_points_list= end_points.values.tolist()
+    return start_points_list, end_points_list
+
+# lazy import
+from OctoTree import OctoTree
+def read_flying_data():
+    # start_time = time.time()
+    sheet_start_points,sheet_end_points = import_flying_data()
+    octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
+    for index in range(len(sheet_end_points)):
+        octotree.ray_casting(tuple(sheet_start_points[index]), tuple(sheet_end_points[index]))
+    leaf_node_list = octotree.get_leaf_node_list()
+    threshold_node_list: list = get_threshold_node_list(leaf_node_list)
+    occu_node_list, free_node_list = get_classified_node_list(threshold_node_list)
+    occu_node_coor_list, free_node_coor_list = get_classified_node_coor_list(occu_node_list, free_node_list)
+    # end_time = time.time()
+    # print('Running time: %s s' % ((end_time - start_time)))
+    export_flying_data()
+    return occu_node_coor_list, free_node_coor_list
+
+def export_flying_data(occu_node_coor_list, free_node_coor_list):
+    value = datetime.today()
+    date_value = datetime.strftime(value,'%H:%M:%S')
+
+    label_occu = ('occu_node_coor_list', date_value,len(occu_node_coor_list))
+    occu_node_tempcsv = pd.DataFrame(columns=label_occu, data=occu_node_coor_list)
+    occu_node_tempcsv.to_csv('occu_node_coor_list.csv', encoding='gbk')
+
+    label_free = ('free_node_coor_list', date_value,len(free_node_coor_list))
+    free_node_tempcsv = pd.DataFrame(columns=label_free, data=free_node_coor_list)
+    free_node_tempcsv.to_csv('free_node_coor_list.csv', encoding='gbk')

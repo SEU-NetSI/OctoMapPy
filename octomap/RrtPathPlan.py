@@ -1,10 +1,13 @@
 import random
+from datetime import datetime
 import math
 import copy
 from matplotlib import pyplot as plt
 import numpy as np
 
 import pandas as pd
+
+from MapUtil import import_known_free_node, import_known_occu_node
 from Config import GOAL_SAMPLE_RATE, EXPAND_STEP, OFFSETX, OFFSETY, OFFSETZ,SHOW_ANIMATION_RRT,INDICE_LENGTH
 
 class Node:
@@ -18,30 +21,16 @@ class RrtPathPlan:
     def __init__(self):
         self.node_list = []
 
-
-    def import_known_free_node(self):
-        free_node_coor_list = []
-
-        free_nodes=pd.read_csv('free_node_coor_list13.0.csv', index_col=0)
-        free_node_coor_list= free_nodes.values.tolist()
-        return free_node_coor_list
-
-    def import_known_occu_node(self):
-        occu_node_coor_list = []
-        occu_nodes=pd.read_csv('occu_node_coor_list13.0.csv', index_col=0)
-        occu_node_coor_list = occu_nodes.values.tolist()
-        return occu_node_coor_list
-
     def random_node(self):
         """
         Randomly pick from free_nodes and return
         """
-        free_node_coor_list = self.import_known_free_node()
+        free_node_coor_list = import_known_free_node()
         node = random.sample(free_node_coor_list, 1)[0]
         return node
 
-    def collision_check(self,new_node):
-        occu_node_coor_list = self.import_known_occu_node()
+    def collision_check(self, new_node):
+        occu_node_coor_list = import_known_occu_node()
         a = 1
         size = 1  # The space occupied by the obstacle
         for (obstacle_x, obstacle_y, obstacle_z) in occu_node_coor_list:
@@ -52,17 +41,6 @@ class RrtPathPlan:
             if d <= size:
                 a = 0  # collision
         return a  # safe
-
-    @staticmethod
-    def get_nearest_list_index(node_list, random_new_node):
-        """
-        get the nearest node
-        """
-        list = [(node.value_x - random_new_node[0]) ** 2 + 
-                (node.value_y - random_new_node[1]) ** 2 + 
-                (node.value_z - random_new_node[2]) ** 2 for node in node_list]
-        min_index = list.index(min(list))
-        return min_index
     
     def planning(self, start_point, end_point):
         """
@@ -123,37 +101,43 @@ class RrtPathPlan:
         path.append((self.start.value_x, self.start.value_y, self.start.value_z))
         path.reverse()
         return path
-    
+
+    @staticmethod
+    def get_nearest_list_index(node_list, random_new_node):
+        """
+        get the nearest node
+        """
+        list = [(node.value_x - random_new_node[0]) ** 2 + 
+                (node.value_y - random_new_node[1]) ** 2 + 
+                (node.value_z - random_new_node[2]) ** 2 for node in node_list]
+        min_index = list.index(min(list))
+        return min_index
+
     def draw_dynamic_graph(self, random_new_node=None):
         """
         Draw animation in process
         """
         plt.clf()
         ax = plt.gca(projection='3d')
-        """
-        Randomly generated points represented by green triangles
-        """
+        # Randomly generated points represented by green triangles
         if random_new_node is not None:
             ax.plot(random_new_node[0]+OFFSETX, 
                     random_new_node[1]+OFFSETY, 
                     random_new_node[2]+OFFSETZ, "^g")
-        """
-        rrt tree represented by a green line
-        """
+
+        # rrt tree represented by a green line
         for node in self.node_list:
             if node.parent is not None:
                 ax.plot([node.value_x+OFFSETX, self.node_list[node.parent].value_x+OFFSETX],
                         [node.value_y+OFFSETY, self.node_list[node.parent].value_y+OFFSETY], 
                         [node.value_z+OFFSETZ, self.node_list[node.parent].value_z+OFFSETZ], "-g")
-        """
-        Obstacle points represented by black squares
-        """                
-        # occu_node_coor_list = self.import_known_occu_node()
+        
+        # Obstacle points represented by black squares              
+        # occu_node_coor_list = import_known_occu_node()
         # for (obstacle_x, obstacle_y, obstacle_z) in occu_node_coor_list:
         #     ax.plot(obstacle_x+OFFSETX, obstacle_y+OFFSETY, obstacle_z+OFFSETZ, "sk", ms=10)
-        """
-        start_point is red, end_point is blue
-        """
+    
+        # start_point is red, end_point is blue
         ax.plot(self.start.value_x+OFFSETX, self.start.value_y+OFFSETY, self.start.value_z+OFFSETZ, "^r")
         ax.plot(self.end.value_x+OFFSETX, self.end.value_y+OFFSETY, self.end.value_z+OFFSETZ, "^b")
         """
@@ -164,48 +148,16 @@ class RrtPathPlan:
         ax.set_zlim(0, INDICE_LENGTH)
         plt.grid(True)
         plt.pause(0.01)
+    
+    def plan_path(self, start_point=(15,-15,9), end_point=(-15,15,9)):
+        path: list = self.planning(start_point, end_point)
+        return path
 
-    def draw_static_graph(self, path):
-        """
-        Draw the final graph
-        """
-        fig = plt.figure()
-        ax = fig.gca(projection='3d')
-        ax.set_xlabel('x')
-        ax.set_ylabel('y')
-        ax.set_zlabel('z')
-        # for node in self.node_list:
-        #     if node.parent is not None:
-        #         ax.plot([node.value_x+OFFSETX, self.node_list[node.parent].value_x+OFFSETX],
-        #                 [node.value_y+OFFSETY, self.node_list[node.parent].value_y+OFFSETY], 
-        #                 [node.value_z+OFFSETZ, self.node_list[node.parent].value_z+OFFSETZ], "-g")
-
-        occu_node_coor_list = self.import_known_occu_node()
-        x, y, z = np.indices((INDICE_LENGTH, INDICE_LENGTH, INDICE_LENGTH))
-        voxel_container = None
-        for i in range(len(occu_node_coor_list)):
-            occu_voxel = (x >= occu_node_coor_list[i][0] + OFFSETX) & (x < occu_node_coor_list[i][0] + 1 + OFFSETX) \
-                         & (y >= occu_node_coor_list[i][1] + OFFSETY) & (y < occu_node_coor_list[i][1] + 1 + OFFSETY) \
-                         & (z >= occu_node_coor_list[i][2] + OFFSETZ) & (z < occu_node_coor_list[i][2] + 1 + OFFSETZ)
-            if voxel_container is not None:
-                voxel_container = np.logical_or(voxel_container, occu_voxel)
-            else:
-                voxel_container = occu_voxel
-        if voxel_container is not None:
-            colors = np.empty(voxel_container.shape, dtype=object)
-            colors[voxel_container] = 'black'
-            ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
-
-        ax.set_xlim(0, INDICE_LENGTH)
-        ax.set_ylim(0, INDICE_LENGTH)
-        ax.set_zlim(0, INDICE_LENGTH)
-        """
-        Generated path indicated by red lines
-        """
-        ax.plot([data[0]+OFFSETX for data in path],
-                [data[1]+OFFSETY for data in path], 
-                [data[2]+OFFSETZ for data in path], '-r')
-        ax.plot(self.start.value_x+OFFSETX, self.start.value_y+OFFSETY, self.start.value_z+OFFSETZ, "^r")
-        ax.plot(self.end.value_x+OFFSETX, self.end.value_y+OFFSETY, self.end.value_z+OFFSETZ, "^b")
-        plt.grid(True)
-        plt.show()
+    def export_rrt_path(self):
+        rrt_path = self.plan_path()
+        value = datetime.today()
+        date_value = datetime.strftime(value,'%H:%M:%S')
+        label = ('rrt_path', date_value,len(rrt_path))
+        tempcsv = pd.DataFrame(columns=label, data=rrt_path)
+        tempcsv.to_csv('rrt_path.csv', encoding='gbk')
+        return rrt_path

@@ -56,7 +56,11 @@ OFFSETZ=math.pow(2, TREE_MAX_DEPTH) / 2
 INDICE_LENGTH= int(math.pow(2, TREE_MAX_DEPTH))
 SHOW_ANIMATION_BUILDING = False
 SAVE_IMAGE = False
-READ_FLYING_DATA = False
+REGENERATE_BEFORE_VISUALIZE = False
+FILE_OCCU_NODE_LIST = "occu_node_coor_list13.0.csv"
+FILE_FREE_NODE_LIST = "free_node_coor_list13.0.csv"
+SHOW_OCTO_FREE = True
+SHOW_RRT_EXPLORATION = True
 """
 Path Plan based on RRT.
 GOAL_SAMPLE_RATE: the probability of picking the target point.
