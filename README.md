@@ -7,6 +7,13 @@ Hornung, Armin, et al. "OctoMap: An efficient probabilistic 3D mapping framework
 
 In this repository, we provide a basic implementation of OctoMap and a visualization tool and a path plan algorithm (RRT) working with OctoMap.
 
+# Preview
+## OctoMap SLAM
+![](docs/octomap.gif)
+
+## RRT Path Plan
+![](docs/octomap-rrtpath.jpg)
+
 # Config
 > There are many parameters in the `Config.py`, but you should consider only some of them at the most time.
 
