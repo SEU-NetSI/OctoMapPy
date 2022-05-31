@@ -67,9 +67,7 @@ class Visualizer:
                 voxel_container = free_voxel
 
         if voxel_container is not None:
-            colors = np.empty(voxel_container.shape, dtype=object)
-            colors[voxel_container] = 'green'
-            ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
+            ax.voxels(voxel_container, facecolors='#b7eb8f0f', edgecolor='#b7eb8f17')
 
         # show the occupied voxels
         voxel_container = None
@@ -83,9 +81,7 @@ class Visualizer:
                 voxel_container = occu_voxel
 
         if voxel_container is not None:
-            colors = np.empty(voxel_container.shape, dtype=object)
-            colors[voxel_container] = 'red'
-            ax.voxels(voxel_container, facecolors=colors, edgecolor='k')
+            ax.voxels(voxel_container, facecolors='#a8071a', edgecolor='#000000')
 
     def visualize_rrtpath(self):
         """
