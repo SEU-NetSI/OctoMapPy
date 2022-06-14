@@ -4,7 +4,6 @@ from Config import HIT_LOGODDS, MISS_LOGODDS
 from OctoNode import OctoNode
 from MapUtil import bresenham3D, export_known_voxel
 
-
 class OctoTree:
     """
     OctoMap to store 3D probabilistic occupancy information.
@@ -91,6 +90,7 @@ class OctoTree:
         grid_path: list = bresenham3D(start_point, end_point)
         for point in grid_path:
             self._root.update(point, diff_logodds, self.origin, self.width, self._max_depth)
+        
 
     def contains(self, point: tuple):
         """

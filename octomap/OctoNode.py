@@ -1,6 +1,8 @@
 import math
+
 from Config import LOGGER, DEFAULT_LOGODDS, OCCUPANCY_LOGODDS, FREE_LOGODDS
 
+NUM_NODES = 0
 
 class OctoNode:
     def __init__(self):
@@ -48,10 +50,28 @@ class OctoNode:
         Splits the node into 8 child nodes.
         Child nodes are given the occupancy probability of this parent node as the initial probability
         """
+        global NUM_NODES
         self._children = (
         OctoNode(), OctoNode(), OctoNode(),
         OctoNode(), OctoNode(), OctoNode(),
         OctoNode(), OctoNode())
+        self._log_odds = DEFAULT_LOGODDS
+        NUM_NODES += 8
+        # write number to the file
+        with open('num_nodes.txt', 'a') as f:
+            f.write(str(NUM_NODES) + "\n")
+    
+    def _prune(self):
+        """
+        Prune own children.
+        """
+        global NUM_NODES
+        self._log_odds = self._children[0].get_log_odds()
+        temp = list(self._children)
+        temp.clear()
+        self._children = tuple(temp)
+        self._is_leaf = True
+        NUM_NODES -= 8
 
     def index(self, point, origin, width):
         """
@@ -126,9 +146,8 @@ class OctoNode:
                                                 width / 2, max_depth - 1)         
                 # TODO: need test (prune)
                 if self._check_children_logodds():
-                    self._log_odds = self._children[0].get_log_odds()
-                    self._children = ()
-                    self._is_leaf = True
+                    self._prune()
+
             except ValueError as e:
                 pass
                 # LOGGER.error(e)

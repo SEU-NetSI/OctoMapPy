@@ -290,7 +290,7 @@ def read_flying_data():
     occu_node_coor_list, free_node_coor_list = get_classified_node_coor_list(occu_node_list, free_node_list)
     # end_time = time.time()
     # print('Running time: %s s' % ((end_time - start_time)))
-    export_flying_data()
+    export_flying_data(occu_node_coor_list, free_node_coor_list)
     return occu_node_coor_list, free_node_coor_list
 
 def export_flying_data(occu_node_coor_list, free_node_coor_list):

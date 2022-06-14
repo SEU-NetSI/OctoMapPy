@@ -1,10 +1,10 @@
-import unittest
+import pytest
 import math
 
 from Config import TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH
 from OctoTree import OctoTree
 
-class TestOctoTree(unittest.TestCase):
+class Test_OctoTree(unittest.TestCase):
     octotree = OctoTree(TREE_CENTER, TREE_RESOLUTION, TREE_MAX_DEPTH)
 
     def test_create_tree(self):
@@ -17,6 +17,9 @@ class TestOctoTree(unittest.TestCase):
         corner_point = (size / 2, size / 2, size / 2)
         self.assertTrue(self.octotree.contains(TREE_CENTER))
         self.assertTrue(self.octotree.contains(corner_point))
+    
+    def test_prune_small_size(self):
+
 
 if __name__ == '__main__':
     unittest.main()
